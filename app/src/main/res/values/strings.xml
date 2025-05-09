@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">DersTakip</string>
+    <string name="derslerim">Derslerim</string>
+    <string name="not_ekleme">Not Ekleme</string>
+    <string name="not_duzenleme">Not Düzenleme</string>
+    <string name="istatistik">İstatistik</string>
+    <string name="ders_ekle">Ders Ekle</string>
 </resources>
