@@ -5,4 +5,8 @@
     <string name="not_duzenleme">Not Düzenleme</string>
     <string name="istatistik">İstatistik</string>
     <string name="ders_ekle">Ders Ekle</string>
+    <string name="iptal">İptal</string>
+    <string name="ekle">Ekle</string>
+    <string name="yeni_ders_ekle">Yeni Ders Ekle</string>
+    <string name="ders_adi">Ders Adı</string>
 </resources>

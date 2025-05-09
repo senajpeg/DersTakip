@@ -56,7 +56,12 @@ fun AppNavigation(viewModel: CourseViewModel = hiltViewModel()) {
                 composable(route = Screen.CourseListScreen.route) {
                     CourseListScreen(
                         navController = navController,
-                        courseList = uistate
+                        courseList = uistate,
+                        currentRoute = currentRoute,
+                        courseName = viewModel.inputCourseName,
+                        setCourseName = {viewModel.upDateCourseName(it)},
+                        saveCourse = {name->viewModel.saveCourse(name)},
+                        clearItem = {viewModel.clearCourses()}
                     )
 
                 }

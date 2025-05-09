@@ -1,5 +1,8 @@
 package com.senaaksoy.derstakip.viewModel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senaaksoy.derstakip.repository.CourseRepository
@@ -24,7 +27,28 @@ class CourseViewModel @Inject constructor(private val courseRepo:CourseRepositor
             }
         }
     }
+    var inputCourseName by mutableStateOf("")
+        private set
 
+    fun upDateCourseName(courseName: String){
+        inputCourseName=courseName
+
+    }
+    fun saveCourse(courseName : String){
+        val newItem=Course(
+            name = courseName
+        )
+        addDb(newItem)
+    }
+
+
+    private fun addDb(course:Course){
+        viewModelScope.launch { courseRepo.insert(course) }
+    }
+
+    fun clearCourses(){
+        inputCourseName=""
+    }
 
 
 
