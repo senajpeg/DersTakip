@@ -1,5 +1,6 @@
 package com.senaaksoy.derstakip.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -19,11 +19,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,7 +38,6 @@ import androidx.navigation.NavController
 import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.navigation.Screen
 import com.senaaksoy.derstakip.roomDb.Course
-import com.senaaksoy.derstakip.viewModel.CourseViewModel
 
 @Composable
 fun CourseListScreen(
@@ -52,7 +48,8 @@ fun CourseListScreen(
     setCourseName: (String) -> Unit,
     saveCourse: (String) -> Unit,
     clearItem: () -> Unit,
-    currentRoute: String
+    currentRoute: String,
+    upDateCourse: (Course) -> Unit,
 ) {
 
     LaunchedEffect(currentRoute) {
@@ -62,7 +59,9 @@ fun CourseListScreen(
     }
 
     var isDialogOpen by remember { mutableStateOf(false) }
-
+    var isEditDialogOpen by remember { mutableStateOf(false) }
+    var courseToEdit by remember { mutableStateOf<Course?>(null) }
+    var editedCourseName by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -107,6 +106,11 @@ fun CourseListScreen(
                         )
                         Spacer(modifier = modifier.weight(1f))
                         Icon(
+                            modifier = Modifier.clickable {
+                                courseToEdit=course
+                                editedCourseName=course.name
+                                isEditDialogOpen=true
+                            },
                             imageVector = Icons.Filled.Edit,
                             contentDescription = null,
                             tint = Color.DarkGray
@@ -114,6 +118,39 @@ fun CourseListScreen(
                     }
                 }
             }
+        }
+        if(isEditDialogOpen && courseToEdit != null){
+            AlertDialog(
+                onDismissRequest = {isEditDialogOpen=false },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            courseToEdit?.let {
+                                val updatedCourse = it.copy(name = editedCourseName)
+                                upDateCourse(updatedCourse)
+                                isEditDialogOpen=false
+                            }
+                        }
+                    ) {
+                        Text(stringResource(R.string.güncelle))
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {isEditDialogOpen=false }
+                    ) {
+                        Text(stringResource(R.string.iptal))
+                    }
+                },
+                title = { Text(stringResource(R.string.dersi_guncelle)) },
+                text = {
+                    TextField(
+                        value = editedCourseName,
+                        onValueChange = {editedCourseName=it},
+                        label = { Text(stringResource(R.string.ders_adi)) }
+                    )
+                }
+            )
         }
         if(isDialogOpen){
             AlertDialog(

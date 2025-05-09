@@ -9,4 +9,6 @@
     <string name="ekle">Ekle</string>
     <string name="yeni_ders_ekle">Yeni Ders Ekle</string>
     <string name="ders_adi">Ders Adı</string>
+    <string name="güncelle">Güncelle</string>
+    <string name="dersi_guncelle">Dersi Güncelle</string>
 </resources>

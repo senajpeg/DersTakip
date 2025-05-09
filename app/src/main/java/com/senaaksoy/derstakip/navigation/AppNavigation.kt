@@ -61,7 +61,8 @@ fun AppNavigation(viewModel: CourseViewModel = hiltViewModel()) {
                         courseName = viewModel.inputCourseName,
                         setCourseName = {viewModel.upDateCourseName(it)},
                         saveCourse = {name->viewModel.saveCourse(name)},
-                        clearItem = {viewModel.clearCourses()}
+                        clearItem = {viewModel.clearCourses()},
+                        upDateCourse = {course-> viewModel.upDateCourse(course)}
                     )
 
                 }

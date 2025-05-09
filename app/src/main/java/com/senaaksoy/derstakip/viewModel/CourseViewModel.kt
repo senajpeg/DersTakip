@@ -15,42 +15,47 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CourseViewModel @Inject constructor(private val courseRepo:CourseRepository): ViewModel(){
+class CourseViewModel @Inject constructor(private val courseRepo: CourseRepository) : ViewModel() {
 
-    private val _uiState= MutableStateFlow<List<Course>>(emptyList())
+    private val _uiState = MutableStateFlow<List<Course>>(emptyList())
     val uiState: StateFlow<List<Course>> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            courseRepo.allCourses().collect{courseList->
-                _uiState.value=courseList
+            courseRepo.allCourses().collect { courseList ->
+                _uiState.value = courseList
             }
         }
     }
+
     var inputCourseName by mutableStateOf("")
         private set
 
-    fun upDateCourseName(courseName: String){
-        inputCourseName=courseName
+    fun upDateCourseName(courseName: String) {
+        inputCourseName = courseName
 
     }
-    fun saveCourse(courseName : String){
-        val newItem=Course(
+
+    fun saveCourse(courseName: String) {
+        val newItem = Course(
             name = courseName
         )
         addDb(newItem)
     }
+    fun upDateCourse(course: Course){
+        viewModelScope.launch {
+            courseRepo.update(course)
+        }
+    }
 
 
-    private fun addDb(course:Course){
+    private fun addDb(course: Course) {
         viewModelScope.launch { courseRepo.insert(course) }
     }
 
-    fun clearCourses(){
-        inputCourseName=""
+    fun clearCourses() {
+        inputCourseName = ""
     }
-
-
 
 
 }
