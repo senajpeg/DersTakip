@@ -91,6 +91,9 @@ fun CourseListScreen(
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(16.dp),
+                    onClick = {
+                        navController.navigate("${Screen.CourseDetailScreen.route}/${course.id}")
+                              },
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFD3CBDA))
                 ) {
                     Row(

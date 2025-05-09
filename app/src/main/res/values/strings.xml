@@ -11,4 +11,5 @@
     <string name="ders_adi">Ders Adı</string>
     <string name="güncelle">Güncelle</string>
     <string name="dersi_guncelle">Dersi Güncelle</string>
+    <string name="not_ekle">Not Ekle</string>
 </resources>

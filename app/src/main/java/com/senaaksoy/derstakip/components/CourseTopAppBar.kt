@@ -3,6 +3,7 @@ package com.senaaksoy.derstakip.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,26 +27,30 @@ import com.senaaksoy.derstakip.navigation.Screen
 @Composable
 fun CourseTopAppBar(
     navController: NavController,
-    currentRoute:String
+    currentRoute:String,
+    courseName: String? = null
+
 ){
-    val titleResId = when {
-        currentRoute.startsWith("CourseListScreen")-> R.string.derslerim
-        currentRoute.startsWith("AddNoteScreen")->R.string.not_ekleme
-        currentRoute.startsWith("EditNoteScreen")->R.string.not_duzenleme
-        currentRoute.startsWith("StatisticsScreen")->R.string.istatistik
-        //ders detay sayfası eksik
-        else ->R.string.app_name
+    val titleText = when {
+        currentRoute.startsWith("CourseDetailScreen") && courseName != null -> courseName
+        currentRoute.startsWith("CourseListScreen") -> stringResource(R.string.derslerim)
+        currentRoute.startsWith("AddNoteScreen") -> stringResource(R.string.not_ekleme)
+        currentRoute.startsWith("EditNoteScreen") -> stringResource(R.string.not_duzenleme)
+        currentRoute.startsWith("StatisticsScreen") -> stringResource(R.string.istatistik)
+        else -> stringResource(R.string.app_name)
     }
     TopAppBar(
         title = {
             Text(
-            stringResource(titleResId),
-                style = TextStyle(
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            ) },
+            text = titleText,
+            style = TextStyle(
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+
+        },
         navigationIcon = {
             if(currentRoute != Screen.CourseListScreen.route){
                 IconButton(
@@ -65,6 +70,17 @@ fun CourseTopAppBar(
                 ) {
                     Icon(
                       imageVector = Icons.Default.BarChart,
+                        tint = Color(0xFFF5F5F5),
+                        contentDescription = null
+                    )
+                }
+            }
+            if(currentRoute==Screen.CourseDetailScreen.route){
+                IconButton(
+                    onClick = {}
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
                         tint = Color(0xFFF5F5F5),
                         contentDescription = null
                     )
