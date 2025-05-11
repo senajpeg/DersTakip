@@ -40,12 +40,20 @@ fun AppNavigation(viewModel: CourseViewModel = hiltViewModel()) {
 
     var currentCourseName by remember { mutableStateOf<String?>(null) }
 
+    /*val courseToDelete = if (currentRoute.startsWith("CourseDetailScreen")) {
+        val courseId = currentBackStackEntry?.arguments?.getInt("courseId")
+        uistate.find { it.id == courseId }
+    } else null*/
+
+
     Scaffold(
         topBar = {
             CourseTopAppBar(
                 currentRoute = currentRoute,
                 navController = navController,
-                courseName = currentCourseName
+                courseName = currentCourseName,
+                courseToDelete = uistate.find { it.name == currentCourseName },
+                onDeleteCourse = { course -> viewModel.deleteCourse(course) }
             )
         }
     ) { paddingValues ->

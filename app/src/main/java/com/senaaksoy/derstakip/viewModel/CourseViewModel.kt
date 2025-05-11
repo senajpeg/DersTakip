@@ -2,6 +2,7 @@ package com.senaaksoy.derstakip.viewModel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,8 @@ class CourseViewModel @Inject constructor(private val courseRepo: CourseReposito
     private val _uiState = MutableStateFlow<List<Course>>(emptyList())
     val uiState: StateFlow<List<Course>> = _uiState.asStateFlow()
 
+
+
     init {
         viewModelScope.launch {
             courseRepo.allCourses().collect { courseList ->
@@ -27,6 +30,9 @@ class CourseViewModel @Inject constructor(private val courseRepo: CourseReposito
             }
         }
     }
+
+
+
 
     var inputCourseName by mutableStateOf("")
         private set
@@ -51,6 +57,11 @@ class CourseViewModel @Inject constructor(private val courseRepo: CourseReposito
 
     private fun addDb(course: Course) {
         viewModelScope.launch { courseRepo.insert(course) }
+    }
+    fun deleteCourse(course: Course) {
+        viewModelScope.launch {
+            courseRepo.delete(course)
+        }
     }
 
     fun clearCourses() {

@@ -12,4 +12,8 @@
     <string name="güncelle">Güncelle</string>
     <string name="dersi_guncelle">Dersi Güncelle</string>
     <string name="not_ekle">Not Ekle</string>
+    <string name="evet">Evet</string>
+    <string name="hayır">Hayır</string>
+    <string name="dersi_sil">Dersi Sil</string>
+    <string name="ders_silme_onayi">Bu dersi silmek istediğinize emin misiniz?</string>
 </resources>
