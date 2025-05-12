@@ -1,10 +1,7 @@
 package com.senaaksoy.derstakip.navigation
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,8 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -40,6 +35,8 @@ fun AppNavigation(
     val navController = rememberNavController()
     val courseUistate by courseViewModel.uiState.collectAsStateWithLifecycle()
     val noteUiState by noteViewModel.uiState.collectAsStateWithLifecycle()
+    val groupedNotes = noteUiState.groupBy { it.title }
+
 
 
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
@@ -61,17 +58,10 @@ fun AppNavigation(
             )
         }
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            Divider(
-                color = Color(0xFFCDBBD0),
-                thickness = 4.dp,
-                modifier = Modifier.fillMaxWidth()
-            )
-
             NavHost(
                 navController = navController,
                 startDestination = Screen.CourseListScreen.route,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize().padding(paddingValues)
             ) {
                 composable(route = Screen.CourseListScreen.route) {
                     CourseListScreen(
@@ -102,7 +92,7 @@ fun AppNavigation(
                     CourseDetailScreen(
                         navController = navController,
                         courseId = courseId,
-                        noteList = noteUiState
+                        groupedNotes = groupedNotes
                     )
                 }
                 composable(
@@ -154,7 +144,7 @@ fun AppNavigation(
 
 
             }
-        }
+
         }
 
 

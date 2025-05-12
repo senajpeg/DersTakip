@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircle
@@ -15,6 +17,7 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -52,6 +55,7 @@ fun EditNoteScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -118,13 +122,13 @@ fun EditNoteScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier.padding(16.dp),
                 value = title,
                 onValueChange = {title = it},
                 label ={Text(stringResource(R.string.konu_basligi))}
             )
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier.padding(16.dp),
                 value =noteContent ,
                 onValueChange = {noteContent=it},

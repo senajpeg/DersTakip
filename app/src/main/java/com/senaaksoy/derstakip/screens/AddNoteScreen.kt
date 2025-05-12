@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircle
@@ -15,6 +17,7 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -28,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.components.EditIconButton
 import com.senaaksoy.derstakip.components.EditButton
@@ -42,21 +46,17 @@ fun AddNoteScreen(
     saveNote: (Int,String,String) -> Unit,
     noteContent: String,
     setNoteContent :(String)->Unit,
-    currentRoute: String,
-    clearItem: () -> Unit,
-    courseId : Int?
+    courseId : Int?,
+    clearItem:()->Unit,
+    currentRoute : String?
 
 ) {
 
-    LaunchedEffect(currentRoute) {
-        if (currentRoute.startsWith("AddNoteScreen")) {
-            clearItem()
-        }
-    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -122,13 +122,13 @@ fun AddNoteScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier.padding(16.dp),
                 value = title,
                 onValueChange = {setTitle(it)},
                 label = { Text(stringResource(R.string.konu_basligi)) }
             )
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier.padding(16.dp),
                 value = noteContent,
                 onValueChange = {setNoteContent(it)},
@@ -137,7 +137,10 @@ fun AddNoteScreen(
         }
         Spacer(modifier = Modifier.weight(1f))
         EditButton(
-            onClick = {saveNote(courseId!!,title,noteContent)
+            onClick = {
+                clearItem()
+                saveNote(courseId!!,title,noteContent)
+
                       navController.popBackStack()},
             text = stringResource(R.string.kaydet)
         )
