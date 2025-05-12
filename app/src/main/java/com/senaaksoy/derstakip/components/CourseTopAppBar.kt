@@ -69,7 +69,8 @@ fun CourseTopAppBar(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Color(0xFFC0BEC4)
                     )
                 }
             }

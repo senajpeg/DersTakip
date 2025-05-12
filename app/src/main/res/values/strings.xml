@@ -16,4 +16,8 @@
     <string name="hayır">Hayır</string>
     <string name="dersi_sil">Dersi Sil</string>
     <string name="ders_silme_onayi">Bu dersi silmek istediğinize emin misiniz?</string>
+    <string name="konu_basligi">Konu Başlığı</string>
+    <string name="calisma_detayları">Çalışma Detayları</string>
+    <string name="kaydet">Kaydet</string>
+    <string name="sil">Sil</string>
 </resources>

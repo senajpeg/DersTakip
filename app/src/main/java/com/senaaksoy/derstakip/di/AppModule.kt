@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.senaaksoy.derstakip.roomDb.CourseDao
 import com.senaaksoy.derstakip.roomDb.CourseDatabase
+import com.senaaksoy.derstakip.roomDb.NoteDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,6 +18,10 @@ object AppModule {
     @Singleton
     @Provides
     fun providesCourseDao(courseDatabase: CourseDatabase):CourseDao=courseDatabase.courseDao()
+
+    @Singleton
+    @Provides
+    fun providesNoteDao(courseDatabase: CourseDatabase): NoteDao = courseDatabase.noteDao()
 
     @Singleton
     @Provides

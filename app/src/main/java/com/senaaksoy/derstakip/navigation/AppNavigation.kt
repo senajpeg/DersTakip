@@ -29,11 +29,17 @@ import com.senaaksoy.derstakip.screens.CourseListScreen
 import com.senaaksoy.derstakip.screens.EditNoteScreen
 import com.senaaksoy.derstakip.screens.StatisticsScreen
 import com.senaaksoy.derstakip.viewModel.CourseViewModel
+import com.senaaksoy.derstakip.viewModel.NoteViewModel
 
 @Composable
-fun AppNavigation(viewModel: CourseViewModel = hiltViewModel()) {
+fun AppNavigation(
+    courseViewModel: CourseViewModel = hiltViewModel(),
+    noteViewModel: NoteViewModel= hiltViewModel()
+) {
     val navController = rememberNavController()
-    val uistate by viewModel.uiState.collectAsStateWithLifecycle()
+    val courseUistate by courseViewModel.uiState.collectAsStateWithLifecycle()
+    val noteUiState by noteViewModel.uiState.collectAsStateWithLifecycle()
+
 
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val currentRoute = currentBackStackEntry?.destination?.route ?: Screen.CourseListScreen.route
@@ -52,8 +58,8 @@ fun AppNavigation(viewModel: CourseViewModel = hiltViewModel()) {
                 currentRoute = currentRoute,
                 navController = navController,
                 courseName = currentCourseName,
-                courseToDelete = uistate.find { it.name == currentCourseName },
-                onDeleteCourse = { course -> viewModel.deleteCourse(course) }
+                courseToDelete = courseUistate.find { it.name == currentCourseName },
+                onDeleteCourse = { course -> courseViewModel.deleteCourse(course) }
             )
         }
     ) { paddingValues ->
@@ -72,13 +78,13 @@ fun AppNavigation(viewModel: CourseViewModel = hiltViewModel()) {
                 composable(route = Screen.CourseListScreen.route) {
                     CourseListScreen(
                         navController = navController,
-                        courseList = uistate,
+                        courseList = courseUistate,
                         currentRoute = currentRoute,
-                        courseName = viewModel.inputCourseName,
-                        setCourseName = {viewModel.upDateCourseName(it)},
-                        saveCourse = {name->viewModel.saveCourse(name)},
-                        clearItem = {viewModel.clearCourses()},
-                        upDateCourse = {course-> viewModel.upDateCourse(course)}
+                        courseName = courseViewModel.inputCourseName,
+                        setCourseName = {courseViewModel.upDateCourseName(it)},
+                        saveCourse = {name->courseViewModel.saveCourse(name)},
+                        clearItem = {courseViewModel.clearCourses()},
+                        upDateCourse = {course-> courseViewModel.upDateCourse(course)}
                     )
 
                 }
@@ -87,16 +93,30 @@ fun AppNavigation(viewModel: CourseViewModel = hiltViewModel()) {
                     arguments = listOf(navArgument("courseId"){type=NavType.IntType})
                 ) {backStackEntry->
                     val courseId=backStackEntry.arguments?.getInt(("courseId"))
-                    val course = uistate.find { it.id == courseId }
+                    val course = courseUistate.find { it.id == courseId }
                     currentCourseName = course?.name
                     CourseDetailScreen(
                         navController = navController,
-                        courseId = courseId
+                        courseId = courseId,
+                        noteList = noteUiState
                     )
                 }
-                composable(route = Screen.AddNoteScreen.route) {
+                composable(
+                    route ="AddNoteScreen/{courseId}",
+                    arguments = listOf(navArgument("courseId"){type=NavType.IntType})
+                ) {backStackEntry->
+                    val courseId=backStackEntry.arguments?.getInt(("courseId"))
                     AddNoteScreen(
-                        navController = navController
+                        navController = navController,
+                        title = noteViewModel.inputTitle,
+                        noteContent = noteViewModel.inputNoteContent,
+                        setTitle = {noteViewModel.upDateTitle(it)},
+                        setNoteContent = {noteViewModel.upDateNoteContent(it)},
+                        saveNote = {id,title,content->noteViewModel.saveNote(id,title,content)
+                                   noteViewModel.getNotesForCourse(id)},
+                        currentRoute = currentRoute,
+                        clearItem = {noteViewModel.clearNotes()},
+                        courseId = courseId
                     )
 
                 }

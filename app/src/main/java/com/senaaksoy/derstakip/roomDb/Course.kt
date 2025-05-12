@@ -9,8 +9,5 @@ data class Course(
     @PrimaryKey(autoGenerate = true)
     val id : Int=0,
     @ColumnInfo(name = "Name")
-    val name : String,
-
-
-
+    val name : String
 )
