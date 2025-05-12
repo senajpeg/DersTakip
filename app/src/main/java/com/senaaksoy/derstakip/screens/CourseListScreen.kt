@@ -52,11 +52,11 @@ fun CourseListScreen(
     upDateCourse: (Course) -> Unit,
 ) {
 
-    LaunchedEffect(currentRoute) {
+   /* LaunchedEffect(currentRoute) {
         if (currentRoute == Screen.CourseListScreen.route) {
             clearItem()
         }
-    }
+    }*/
 
     var isDialogOpen by remember { mutableStateOf(false) }
     var isEditDialogOpen by remember { mutableStateOf(false) }

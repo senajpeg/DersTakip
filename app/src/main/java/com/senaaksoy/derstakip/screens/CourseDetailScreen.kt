@@ -77,7 +77,6 @@ fun CourseDetailScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp).fillMaxSize(),
                             ) {
-                            // Başlık ve ikon tek bir satırda
                             Row(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
@@ -86,7 +85,6 @@ fun CourseDetailScreen(
                                     style = MaterialTheme.typography.titleLarge
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
-                                // Her kart için sadece bir düzenleme ikonu
                                 if (notes.isNotEmpty()) {
                                     Icon(
                                         imageVector = Icons.Filled.Edit,
@@ -98,18 +96,14 @@ fun CourseDetailScreen(
                                 }
                             }
 
-                            // Notları alt alta listele
                             notes.forEach { note ->
 
                                     Column(modifier = Modifier.fillMaxWidth()) {
-                                        // Not içeriği
                                         Text(
                                             text = note.noteContent
                                         )
 
-                                    // İkon burada YOK
                                 }
-                                // Notlar arasına ayırıcı çizgi ekle (son not hariç)
                                 if (note != notes.last()) {
                                     Divider(
                                         color = Color(0xFFCDBBD0),
