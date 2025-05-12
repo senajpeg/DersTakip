@@ -20,4 +20,6 @@
     <string name="calisma_detayları">Çalışma Detayları</string>
     <string name="kaydet">Kaydet</string>
     <string name="sil">Sil</string>
+    <string name="notu_sil">Notu Sil</string>
+    <string name="guncelle">Güncelle</string>
 </resources>

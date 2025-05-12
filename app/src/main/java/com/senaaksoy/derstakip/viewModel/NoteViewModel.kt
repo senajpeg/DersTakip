@@ -28,6 +28,7 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         }
     }
 
+
     var inputTitle by mutableStateOf("")
         private set
     var inputNoteContent by mutableStateOf("")
@@ -53,8 +54,18 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     fun deleteNote(note: Note) {
         viewModelScope.launch {
             noteRepo.delete(note)
+            getNotesForCourse(note.courseId)
         }
     }
+
+    fun editNotes(id: Int, courseId: Int,title: String,noteContent: String){
+        val newNotes=Note(id = id,
+            title = title,
+            noteContent = noteContent,
+            courseId = courseId)
+        updateNote(newNotes)
+    }
+
 
     fun updateNote(note: Note) {
         viewModelScope.launch {

@@ -55,7 +55,7 @@ fun EditButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .padding(32.dp),
+            .padding(8.dp),
         colors = ButtonDefaults.buttonColors(Color(0xFF8177A7))
     ) {
         Text(

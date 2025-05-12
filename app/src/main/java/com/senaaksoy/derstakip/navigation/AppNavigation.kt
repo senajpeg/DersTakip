@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,10 +47,7 @@ fun AppNavigation(
 
     var currentCourseName by remember { mutableStateOf<String?>(null) }
 
-    /*val courseToDelete = if (currentRoute.startsWith("CourseDetailScreen")) {
-        val courseId = currentBackStackEntry?.arguments?.getInt("courseId")
-        uistate.find { it.id == courseId }
-    } else null*/
+
 
 
     Scaffold(
@@ -91,8 +89,14 @@ fun AppNavigation(
                 composable(
                     route ="CourseDetailScreen/{courseId}",
                     arguments = listOf(navArgument("courseId"){type=NavType.IntType})
-                ) {backStackEntry->
+                ) {
+                    backStackEntry->
                     val courseId=backStackEntry.arguments?.getInt(("courseId"))
+                    LaunchedEffect(courseId) {
+                        courseId?.let {
+                            noteViewModel.getNotesForCourse(it)
+                        }
+                    }
                     val course = courseUistate.find { it.id == courseId }
                     currentCourseName = course?.name
                     CourseDetailScreen(
@@ -120,9 +124,25 @@ fun AppNavigation(
                     )
 
                 }
-                composable(route = Screen.EditNoteScreen.route) {
+                composable(
+                    route = "EditNoteScreen/{courseId}/{noteId}",
+                    arguments = listOf(
+                        navArgument("courseId"){type=NavType.IntType},
+                        navArgument("noteId"){type=NavType.IntType}
+                    )
+                    ) {backStackEntry->
+                    val courseId=backStackEntry.arguments?.getInt(("courseId"))
+                    val noteId = backStackEntry.arguments?.getInt("noteId")
                     EditNoteScreen(
-                        navController = navController
+                        navController = navController,
+                        courseId = courseId,
+                        noteId = noteId,
+                        noteList=noteUiState,
+                        editNotes={noteId,courseId,title,noteContent->noteViewModel.editNotes(noteId,courseId,title,noteContent)
+                        noteViewModel.getNotesForCourse(courseId)},
+                        deleteNote = {note-> noteViewModel.deleteNote(note)}
+
+
                     )
 
                 }
