@@ -49,14 +49,16 @@ fun EditIconButton(
 fun EditButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled : Boolean=true
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
-        colors = ButtonDefaults.buttonColors(Color(0xFF8177A7))
+        colors = ButtonDefaults.buttonColors(Color(0xFF8177A7)),
+        enabled = enabled
     ) {
         Text(
             text = text,

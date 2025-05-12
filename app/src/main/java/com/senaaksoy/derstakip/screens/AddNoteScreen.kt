@@ -140,9 +140,9 @@ fun AddNoteScreen(
             onClick = {
                 clearItem()
                 saveNote(courseId!!,title,noteContent)
-
                       navController.popBackStack()},
-            text = stringResource(R.string.kaydet)
+            text = stringResource(R.string.kaydet),
+            enabled = title.isNotBlank() && noteContent.isNotBlank()
         )
 
     }

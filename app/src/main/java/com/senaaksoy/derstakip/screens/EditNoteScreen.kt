@@ -140,7 +140,8 @@ fun EditNoteScreen(
             onClick = {
                 editNotes(note!!.id,courseId!!,title,noteContent)
                 navController.popBackStack()},
-            text = stringResource(R.string.guncelle)
+            text = stringResource(R.string.guncelle),
+            enabled = title.isNotBlank() && noteContent.isNotBlank()
         )
         EditButton(
             onClick = {note?.let{deleteNote(it)}

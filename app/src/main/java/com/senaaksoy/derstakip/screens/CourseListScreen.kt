@@ -22,10 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,27 +47,25 @@ fun CourseListScreen(
     setCourseName: (String) -> Unit,
     saveCourse: (String) -> Unit,
     clearItem: () -> Unit,
-    currentRoute: String,
     upDateCourse: (Course) -> Unit,
 ) {
 
-   /* LaunchedEffect(currentRoute) {
-        if (currentRoute == Screen.CourseListScreen.route) {
-            clearItem()
-        }
-    }*/
+    var isDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isEditDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var editedCourseName by rememberSaveable { mutableStateOf("") }
+    var courseIdToEdit by rememberSaveable { mutableStateOf<Int?>(null) }
+    val courseToEdit = courseList.find { it.id == courseIdToEdit }
 
-    var isDialogOpen by remember { mutableStateOf(false) }
-    var isEditDialogOpen by remember { mutableStateOf(false) }
-    var courseToEdit by remember { mutableStateOf<Course?>(null) }
-    var editedCourseName by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = {isDialogOpen=true},
+            onClick = {
+                isDialogOpen = true
+                clearItem()
+            },
             modifier = Modifier.padding(16.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFF8177A7))
         ) {
@@ -93,26 +90,28 @@ fun CourseListScreen(
                         .padding(16.dp),
                     onClick = {
                         navController.navigate("${Screen.CourseDetailScreen.route}/${course.id}")
-                              },
+                    },
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFD3CBDA))
                 ) {
                     Row(
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically) {
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
                             text = course.name,
                             style = TextStyle(
                                 color = Color(0xFF463648),
-                                fontSize = 16.sp)
+                                fontSize = 16.sp
+                            )
                         )
                         Spacer(modifier = modifier.weight(1f))
                         Icon(
                             modifier = Modifier.clickable {
-                                courseToEdit=course
-                                editedCourseName=course.name
-                                isEditDialogOpen=true
+                                courseIdToEdit = course.id
+                                editedCourseName = course.name
+                                isEditDialogOpen = true
                             },
                             imageVector = Icons.Filled.Edit,
                             contentDescription = null,
@@ -122,16 +121,18 @@ fun CourseListScreen(
                 }
             }
         }
-        if(isEditDialogOpen && courseToEdit != null){
+        if (isEditDialogOpen && courseToEdit != null) {
             AlertDialog(
-                onDismissRequest = {isEditDialogOpen=false },
+                onDismissRequest = {
+                    isEditDialogOpen = false
+                },
                 confirmButton = {
                     Button(
                         onClick = {
                             courseToEdit?.let {
                                 val updatedCourse = it.copy(name = editedCourseName)
                                 upDateCourse(updatedCourse)
-                                isEditDialogOpen=false
+                                isEditDialogOpen = false
                             }
                         }
                     ) {
@@ -140,7 +141,10 @@ fun CourseListScreen(
                 },
                 dismissButton = {
                     Button(
-                        onClick = {isEditDialogOpen=false }
+                        onClick = {
+                            isEditDialogOpen = false
+                        },
+                        enabled = editedCourseName.isNotBlank()
                     ) {
                         Text(stringResource(R.string.iptal))
                     }
@@ -149,38 +153,45 @@ fun CourseListScreen(
                 text = {
                     TextField(
                         value = editedCourseName,
-                        onValueChange = {editedCourseName=it},
+                        onValueChange = { editedCourseName = it },
                         label = { Text(stringResource(R.string.ders_adi)) }
                     )
                 }
             )
         }
-        if(isDialogOpen){
+        if (isDialogOpen) {
             AlertDialog(
-                onDismissRequest = {isDialogOpen=false},
+                onDismissRequest = {
+                    isDialogOpen = false
+                    clearItem()
+                },
                 confirmButton = {
                     Button(
                         onClick = {
                             saveCourse(courseName)
-                            isDialogOpen=false
-                        }
+                            isDialogOpen = false
+                            clearItem()
+                        },
+                        enabled = courseName.isNotBlank()
                     ) {
                         Text(stringResource(R.string.ders_ekle))
                     }
                 },
                 dismissButton = {
-                    Button(onClick = {isDialogOpen=false }) { Text(stringResource(R.string.iptal)) }
+                    Button(onClick = {
+                        isDialogOpen = false
+                        clearItem()
+                    }) { Text(stringResource(R.string.iptal)) }
                 },
                 title = { Text(stringResource(R.string.yeni_ders_ekle)) },
                 text = {
-                        TextField(
-                            label = { Text(stringResource(R.string.ders_adi)) },
-                            value =courseName,
-                            onValueChange = {setCourseName(it)})
+                    TextField(
+                        label = { Text(stringResource(R.string.ders_adi)) },
+                        value = courseName,
+                        onValueChange = { setCourseName(it) })
                 }
             )
         }
-
 
 
     }

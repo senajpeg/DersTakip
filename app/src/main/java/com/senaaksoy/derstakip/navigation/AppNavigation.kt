@@ -67,7 +67,6 @@ fun AppNavigation(
                     CourseListScreen(
                         navController = navController,
                         courseList = courseUistate,
-                        currentRoute = currentRoute,
                         courseName = courseViewModel.inputCourseName,
                         setCourseName = {courseViewModel.upDateCourseName(it)},
                         saveCourse = {name->courseViewModel.saveCourse(name)},
@@ -92,7 +91,8 @@ fun AppNavigation(
                     CourseDetailScreen(
                         navController = navController,
                         courseId = courseId,
-                        groupedNotes = groupedNotes
+                        groupedNotes = groupedNotes,
+                        clearItem = {noteViewModel.clearNotes()}
                     )
                 }
                 composable(
