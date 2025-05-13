@@ -68,14 +68,13 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     }
 
     fun editNotes(id: Int, courseId: Int,title: String,noteContent: String){
-        val note = _uiState.value.find { it.id == id }
-        val durationMillis = note?.durationMillis ?: timerDisplay.value
+        val updatedDurationMillis = timerDisplay.value
 
         val newNotes=Note(id = id,
             title = title,
             noteContent = noteContent,
             courseId = courseId,
-            durationMillis = durationMillis
+            durationMillis = updatedDurationMillis
         )
         updateNote(newNotes)
     }
@@ -117,6 +116,15 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         studyTimer.resume()
         _timerState.value = TimerState.RUNNING
     }
+    fun setTimerValue(value: Long) {
+        studyTimer.setElapsedTime(value)
+        if (value > 0) {
+            _timerState.value = TimerState.INITIAL
+        } else {
+            _timerState.value = TimerState.INITIAL
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         studyTimer.pause()

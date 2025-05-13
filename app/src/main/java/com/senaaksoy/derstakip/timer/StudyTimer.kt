@@ -28,7 +28,7 @@ class StudyTimer {
 
         timerJob = coroutineScope.launch {
             while (isRunning) {
-                delay(100) // Update every 100ms for smooth UI
+                delay(100)
                 val currentTimestamp = System.currentTimeMillis()
                 val delta = currentTimestamp - lastTimestamp
                 _elapsedTime.value += delta
@@ -50,6 +50,10 @@ class StudyTimer {
     fun resume() {
         start()
     }
+    fun setElapsedTime(timeInMillis: Long) {
+        pause()
+        _elapsedTime.value = timeInMillis
+    }
 
     fun formatTime(millis: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(millis)
@@ -57,4 +61,5 @@ class StudyTimer {
         val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
+
 }

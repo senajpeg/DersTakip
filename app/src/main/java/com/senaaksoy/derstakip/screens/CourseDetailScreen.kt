@@ -35,7 +35,8 @@ fun CourseDetailScreen(
     courseId: Int?,
     groupedNotes: Map<String, List<Note>>,
     clearItem: () -> Unit,
-    resetTimer: () -> Unit
+    resetTimer: () -> Unit,
+
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),

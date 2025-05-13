@@ -47,6 +47,15 @@ fun AppNavigation(
     var currentCourseName by remember { mutableStateOf<String?>(null) }
 
 
+    val currentTimerState by noteViewModel.timerState.collectAsState()
+    val timerStateString = when (currentTimerState) {
+        NoteViewModel.TimerState.INITIAL -> "initial"
+        NoteViewModel.TimerState.RUNNING -> "running"
+        NoteViewModel.TimerState.PAUSED -> "paused"
+        NoteViewModel.TimerState.RESET -> "reset"
+    }
+
+
 
 
     Scaffold(
@@ -104,13 +113,6 @@ fun AppNavigation(
                 ) {backStackEntry->
                     val courseId=backStackEntry.arguments?.getInt(("courseId"))
 
-                    val currentTimerState by noteViewModel.timerState.collectAsState()
-                    val timerStateString = when (currentTimerState) {
-                        NoteViewModel.TimerState.INITIAL -> "initial"
-                        NoteViewModel.TimerState.RUNNING -> "running"
-                        NoteViewModel.TimerState.PAUSED -> "paused"
-                        NoteViewModel.TimerState.RESET -> "reset"
-                    }
                     AddNoteScreen(
                         navController = navController,
                         title = noteViewModel.inputTitle,
@@ -140,6 +142,7 @@ fun AppNavigation(
                     ) {backStackEntry->
                     val courseId=backStackEntry.arguments?.getInt(("courseId"))
                     val noteId = backStackEntry.arguments?.getInt("noteId")
+
                     EditNoteScreen(
                         navController = navController,
                         courseId = courseId,
@@ -147,7 +150,14 @@ fun AppNavigation(
                         noteList=noteUiState,
                         editNotes={noteId,courseId,title,noteContent->noteViewModel.editNotes(noteId,courseId,title,noteContent)
                         noteViewModel.getNotesForCourse(courseId)},
-                        deleteNote = {note-> noteViewModel.deleteNote(note)}
+                        deleteNote = {note-> noteViewModel.deleteNote(note)},
+                        startTimer = { noteViewModel.startTimer() },
+                        resetTimer = { noteViewModel.resetTimer() },
+                        resumeTimer = { noteViewModel.resumeTimer() },
+                        pauseTimer = { noteViewModel.pauseTimer() },
+                        formattedTime = formattedTime,
+                        timerState = timerStateString,
+                        setTimerValue = { noteViewModel.setTimerValue(it) }
 
 
                     )

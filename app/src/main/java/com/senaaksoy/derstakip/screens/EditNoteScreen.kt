@@ -47,13 +47,24 @@ fun EditNoteScreen(
     noteId:Int?,
     noteList: List<Note>,
     editNotes:(Int,Int,String,String)->Unit,
-    deleteNote: (Note) -> Unit
+    deleteNote: (Note) -> Unit,
+    startTimer: () -> Unit,
+    resetTimer: () -> Unit,
+    resumeTimer: () -> Unit,
+    pauseTimer: () -> Unit,
+    formattedTime: String,
+    timerState: String,
+    setTimerValue: (Long) -> Unit
 ){
     val note =noteList.firstOrNull{it.id==noteId}
     var title by rememberSaveable { mutableStateOf(note?.title ?: "") }
     var noteContent by rememberSaveable { mutableStateOf(note?.noteContent ?: "") }
 
-
+    LaunchedEffect(note) {
+        note?.let {
+            setTimerValue(it.durationMillis)
+        }
+    }
 
 
     Column(
@@ -71,10 +82,10 @@ fun EditNoteScreen(
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "",
+                    text = formattedTime,
+                    modifier = Modifier.padding(24.dp),
                     fontSize = 30.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White
@@ -90,26 +101,26 @@ fun EditNoteScreen(
         ) {
             EditIconButton(
                 icon = Icons.Filled.PlayArrow,
-                onClick = {},
-                isEnabled = true,
+                onClick = {startTimer()},
+                isEnabled = timerState == "reset",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.RestartAlt,
-                onClick = {},
-                isEnabled = true,
+                onClick = {resetTimer()},
+                isEnabled = timerState == "paused",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.PlayCircle,
-                onClick = {},
-                isEnabled = true,
+                onClick = {resumeTimer()},
+                isEnabled = timerState == "initial" || timerState == "paused",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.Stop,
-                onClick = {},
-                isEnabled = true,
+                onClick = {pauseTimer()},
+                isEnabled = timerState == "running",
                 modifier = Modifier.weight(1f)
             )
 
