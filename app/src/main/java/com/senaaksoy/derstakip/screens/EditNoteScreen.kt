@@ -10,17 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +34,7 @@ import androidx.navigation.NavController
 import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.components.EditIconButton
-import com.senaaksoy.derstakip.navigation.Screen
+import com.senaaksoy.derstakip.components.EditTextField
 import com.senaaksoy.derstakip.roomDb.Note
 
 @Composable
@@ -111,7 +108,7 @@ fun EditNoteScreen(
             )
 
         }
-        Divider(
+        HorizontalDivider(
             color = Color(0xFFCDBBD0),
             thickness = 1.dp,
             modifier = Modifier.fillMaxWidth()
@@ -123,17 +120,15 @@ fun EditNoteScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            OutlinedTextField(
-                modifier = Modifier.padding(16.dp),
+            EditTextField(
                 value = title,
                 onValueChange = {title = it},
-                label ={Text(stringResource(R.string.konu_basligi))}
+                label =stringResource(R.string.konu_basligi)
             )
-            OutlinedTextField(
-                modifier = Modifier.padding(16.dp),
+            EditTextField(
                 value =noteContent ,
                 onValueChange = {noteContent=it},
-                label =  {Text(stringResource(R.string.calisma_detayları))}
+                label =  stringResource(R.string.calisma_detayları)
             )
         }
         Spacer(modifier = Modifier.weight(1f))

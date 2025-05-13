@@ -1,27 +1,19 @@
 package com.senaaksoy.derstakip.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,12 +27,12 @@ import com.senaaksoy.derstakip.roomDb.Course
 @Composable
 fun CourseTopAppBar(
     navController: NavController,
-    currentRoute:String,
+    currentRoute: String,
     courseName: String? = null,
     courseToDelete: Course? = null,
     onDeleteCourse: ((Course) -> Unit)? = null
 
-){
+) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     val titleText = when {
@@ -54,76 +46,56 @@ fun CourseTopAppBar(
     TopAppBar(
         title = {
             Text(
-            text = titleText,
-            style = TextStyle(
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                text = titleText,
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
             )
-        )
 
         },
         navigationIcon = {
-            if(currentRoute != Screen.CourseListScreen.route){
-                IconButton(
-                    onClick = { navController.navigateUp() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = null,
-                        tint = Color(0xFFC0BEC4)
-                    )
-                }
+            if (currentRoute != Screen.CourseListScreen.route) {
+                EditIconButton(
+                    onClick = { navController.navigateUp() },
+                    isEnabled = true,
+                    icon = Icons.AutoMirrored.Filled.ArrowBack
+                )
             }
         },
         actions = {
-            if(currentRoute== Screen.CourseListScreen.route){
-                IconButton(
-                    onClick = {navController.navigate(Screen.StatisticsScreen.route)}
-                ) {
-                    Icon(
-                      imageVector = Icons.Default.BarChart,
-                        tint = Color(0xFFF5F5F5),
-                        contentDescription = null
-                    )
-                }
-            }
-           else if(currentRoute.startsWith("CourseDetailScreen")&& courseToDelete != null && onDeleteCourse != null){
-                IconButton(
-                    onClick = {
-                        showDialog=true
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        tint = Color(0xFFF5F5F5),
-                        contentDescription = null
-                    )
-                }
-                if(showDialog /*&& courseToDelete !=null*/){
-                    AlertDialog(
-                        onDismissRequest = {showDialog=false},
-                        confirmButton = {
-                            Button(
-                                onClick = {onDeleteCourse(courseToDelete)
-                                showDialog=false
-                                navController.popBackStack()}
-                            ) {
-                                Text(stringResource(R.string.evet))
-                            }
+            if (currentRoute == Screen.CourseListScreen.route) {
+                EditIconButton(
+                    onClick = { navController.navigate(Screen.StatisticsScreen.route) },
+                    icon = Icons.Default.BarChart,
+                    isEnabled = true
+                )
+            } else if (currentRoute.startsWith("CourseDetailScreen") && courseToDelete != null && onDeleteCourse != null) {
+                EditIconButton(
+                    onClick = { showDialog = true },
+                    isEnabled = true,
+                    icon = Icons.Default.Delete
+                )
+
+                if (showDialog) {
+                    EditAlertDialog(
+                        title = stringResource(R.string.dersi_sil),
+                        value = "",
+                        text = R.string.ders_silme_onayi,
+                        onValueChange = {},
+                        onConfirm = {
+                            onDeleteCourse(courseToDelete)
+                            showDialog = false
+                            navController.popBackStack()
                         },
-                        dismissButton = {
-                            Button(
-                                onClick = {showDialog=false}
-                            ) { Text(stringResource(R.string.hayır)) }
-                        },
-                        title = { Text(stringResource(R.string.dersi_sil)) },
-                        text = {Text(stringResource(R.string.ders_silme_onayi))}
-
+                        onDismiss = { showDialog = false },
+                        confirmButtonText = stringResource(R.string.evet),
+                        dismissButtonText = stringResource(R.string.hayır),
+                        isConfirmEnabled = true,
+                        isTextFieldVisible = false
                     )
                 }
-
-
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

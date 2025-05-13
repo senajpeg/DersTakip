@@ -12,15 +12,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.senaaksoy.derstakip.R
+import com.senaaksoy.derstakip.components.EditAlertDialog
 import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.navigation.Screen
 import com.senaaksoy.derstakip.roomDb.Course
@@ -74,7 +71,7 @@ fun CourseListScreen(
         )
 
 
-        Divider(
+        HorizontalDivider(
             color = Color(0xFFCDBBD0),
             thickness = 1.dp,
             modifier = Modifier.fillMaxWidth()
@@ -119,74 +116,40 @@ fun CourseListScreen(
             }
         }
         if (isEditDialogOpen && courseToEdit != null) {
-            AlertDialog(
-                onDismissRequest = {
+            EditAlertDialog(
+                title = stringResource(R.string.dersi_guncelle),
+                value = editedCourseName,
+                onValueChange = { editedCourseName = it },
+                onConfirm = {
+                    val updatedCourse = courseToEdit.copy(name = editedCourseName)
+                    upDateCourse(updatedCourse)
                     isEditDialogOpen = false
                 },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            courseToEdit?.let {
-                                val updatedCourse = it.copy(name = editedCourseName)
-                                upDateCourse(updatedCourse)
-                                isEditDialogOpen = false
-                            }
-                        }
-                    ) {
-                        Text(stringResource(R.string.güncelle))
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            isEditDialogOpen = false
-                        },
-                        enabled = editedCourseName.isNotBlank()
-                    ) {
-                        Text(stringResource(R.string.iptal))
-                    }
-                },
-                title = { Text(stringResource(R.string.dersi_guncelle)) },
-                text = {
-                    TextField(
-                        value = editedCourseName,
-                        onValueChange = { editedCourseName = it },
-                        label = { Text(stringResource(R.string.ders_adi)) }
-                    )
-                }
+                onDismiss = { isEditDialogOpen = false },
+                confirmButtonText = stringResource(R.string.güncelle),
+                dismissButtonText = stringResource(R.string.iptal),
+                isConfirmEnabled = editedCourseName.isNotBlank(),
+                text = R.string.ders_guncelleme
             )
         }
         if (isDialogOpen) {
-            AlertDialog(
-                onDismissRequest = {
+            EditAlertDialog(
+                title = stringResource(R.string.yeni_ders_ekle),
+                value = courseName,
+                onValueChange = setCourseName,
+                onConfirm = {
+                    saveCourse(courseName)
                     isDialogOpen = false
                     clearItem()
                 },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            saveCourse(courseName)
-                            isDialogOpen = false
-                            clearItem()
-                        },
-                        enabled = courseName.isNotBlank()
-                    ) {
-                        Text(stringResource(R.string.ders_ekle))
-                    }
+                onDismiss = {
+                    isDialogOpen = false
+                    clearItem()
                 },
-                dismissButton = {
-                    Button(onClick = {
-                        isDialogOpen = false
-                        clearItem()
-                    }) { Text(stringResource(R.string.iptal)) }
-                },
-                title = { Text(stringResource(R.string.yeni_ders_ekle)) },
-                text = {
-                    TextField(
-                        label = { Text(stringResource(R.string.ders_adi)) },
-                        value = courseName,
-                        onValueChange = { setCourseName(it) })
-                }
+                confirmButtonText = stringResource(R.string.ders_ekle),
+                dismissButtonText = stringResource(R.string.iptal),
+                isConfirmEnabled = courseName.isNotBlank(),
+                text = R.string.ders_ekleme
             )
         }
 

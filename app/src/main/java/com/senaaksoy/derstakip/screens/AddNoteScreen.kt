@@ -10,34 +10,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.components.EditIconButton
 import com.senaaksoy.derstakip.components.EditButton
-import com.senaaksoy.derstakip.navigation.Screen
-import com.senaaksoy.derstakip.ui.theme.DersTakipTheme
+import com.senaaksoy.derstakip.components.EditTextField
 
 @Composable
 fun AddNoteScreen(
@@ -112,7 +105,7 @@ fun AddNoteScreen(
             )
 
         }
-        Divider(
+        HorizontalDivider(
             color = Color(0xFFCDBBD0),
             thickness = 1.dp,
             modifier = Modifier.fillMaxWidth()
@@ -123,17 +116,15 @@ fun AddNoteScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(
-                modifier = Modifier.padding(16.dp),
+            EditTextField(
                 value = title,
                 onValueChange = {setTitle(it)},
-                label = { Text(stringResource(R.string.konu_basligi)) }
+                label = stringResource(R.string.konu_basligi)
             )
-            OutlinedTextField(
-                modifier = Modifier.padding(16.dp),
+            EditTextField(
                 value = noteContent,
                 onValueChange = {setNoteContent(it)},
-                label = { Text(stringResource(R.string.calisma_detayları)) }
+                label = stringResource(R.string.calisma_detayları)
             )
         }
         Spacer(modifier = Modifier.weight(1f))

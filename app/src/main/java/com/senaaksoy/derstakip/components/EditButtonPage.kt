@@ -20,8 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun EditIconButton(
-    text: String? = null,
-    icon: ImageVector? = null,
+    icon: ImageVector,
     onClick: () -> Unit,
     isEnabled: Boolean,
     modifier: Modifier = Modifier
@@ -30,23 +29,18 @@ fun EditIconButton(
         onClick = onClick,
         enabled = isEnabled,
         modifier = modifier,
-        colors = ButtonColors(
-            containerColor = Color(0xFFFEFDFF),
-            contentColor = Color(0xFF8C799D),
+       colors = ButtonColors(
+            containerColor = Color(0xFF8177A7),
+            contentColor = Color(0xFFC8B4D7),
             disabledContentColor = Color(0xFF434346),
             disabledContainerColor = Color(0xFF69686E)
         ),
         border = BorderStroke(1.dp, Color(0xFF8C799D))
     ) {
-        icon?.let {
-            Icon(
-                imageVector = it,
-                contentDescription = text ?: ""
-            )
-        }
-        text?.let {
-            Text(text = it)
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = null
+        )
     }
 }
 
