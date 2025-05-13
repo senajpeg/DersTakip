@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.senaaksoy.derstakip.R
+import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.navigation.Screen
 import com.senaaksoy.derstakip.roomDb.Note
 
@@ -41,21 +42,17 @@ fun CourseDetailScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(
+        EditButton(
             onClick = {
                 clearItem()
                 navController.navigate("${Screen.AddNoteScreen.route}/${courseId}") },
-            modifier = Modifier.padding(16.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFF8177A7))
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = null
-                )
-                Text(text = stringResource(R.string.not_ekle))
-            }
-        }
+            isIconVisible = true,
+            icon = Icons.Filled.Add,
+            text = R.string.not_ekle
+
+        )
+
+
         Divider(
             color = Color(0xFFCDBBD0),
             thickness = 1.dp,

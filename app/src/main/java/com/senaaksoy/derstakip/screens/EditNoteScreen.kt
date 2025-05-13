@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.RestartAlt
@@ -65,12 +66,12 @@ fun EditNoteScreen(
             colors = CardDefaults.cardColors(containerColor = Color(0xFF887A9D))
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "00:00:00",
-                    modifier = Modifier.padding(24.dp),
                     fontSize = 30.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White
@@ -140,17 +141,21 @@ fun EditNoteScreen(
             onClick = {
                 editNotes(note!!.id,courseId!!,title,noteContent)
                 navController.popBackStack()},
-            text = stringResource(R.string.guncelle),
-            enabled = title.isNotBlank() && noteContent.isNotBlank()
+            text = R.string.guncelle,
+            enabled = title.isNotBlank() && noteContent.isNotBlank(),
+            isIconVisible = false
         )
         EditButton(
             onClick = {note?.let{deleteNote(it)}
                 navController.popBackStack()},
-            text = stringResource(R.string.notu_sil)
+            text = R.string.notu_sil,
+            isIconVisible = false
+
         )
         EditButton(
             onClick = {navController.popBackStack()},
-            text = stringResource(R.string.iptal)
+            text = R.string.iptal,
+            isIconVisible = false
         )
 
     }

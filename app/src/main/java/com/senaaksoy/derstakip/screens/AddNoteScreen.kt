@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.RestartAlt
@@ -66,7 +67,7 @@ fun AddNoteScreen(
             colors = CardDefaults.cardColors(containerColor = Color(0xFF887A9D))
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -141,8 +142,9 @@ fun AddNoteScreen(
                 clearItem()
                 saveNote(courseId!!,title,noteContent)
                       navController.popBackStack()},
-            text = stringResource(R.string.kaydet),
-            enabled = title.isNotBlank() && noteContent.isNotBlank()
+            text = R.string.kaydet,
+            enabled = title.isNotBlank() && noteContent.isNotBlank(),
+            isIconVisible = false
         )
 
     }

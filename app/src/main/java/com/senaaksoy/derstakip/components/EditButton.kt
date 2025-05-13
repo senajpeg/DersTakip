@@ -1,6 +1,8 @@
 package com.senaaksoy.derstakip.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -9,9 +11,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -29,10 +33,10 @@ fun EditIconButton(
         colors = ButtonColors(
             containerColor = Color(0xFFFEFDFF),
             contentColor = Color(0xFF8C799D),
-            disabledContentColor =Color(0xFF434346),
+            disabledContentColor = Color(0xFF434346),
             disabledContainerColor = Color(0xFF69686E)
         ),
-        border = BorderStroke(1.dp,Color(0xFF8C799D))
+        border = BorderStroke(1.dp, Color(0xFF8C799D))
     ) {
         icon?.let {
             Icon(
@@ -45,24 +49,43 @@ fun EditIconButton(
         }
     }
 }
+
 @Composable
 fun EditButton(
-    text: String,
+    @StringRes text: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled : Boolean=true
+    enabled: Boolean = true,
+    isIconVisible: Boolean,
+    icon: ImageVector?=null
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(top=16.dp, bottom = 16.dp, start = 64.dp,end=64.dp),
         colors = ButtonDefaults.buttonColors(Color(0xFF8177A7)),
         enabled = enabled
     ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(4.dp)
-        )
+        if (isIconVisible) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null
+                    )
+                }
+                Text(
+                    text = stringResource(text),
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+        } else {
+            Text(
+                text = stringResource(text),
+            )
+        }
+
+
     }
 }
