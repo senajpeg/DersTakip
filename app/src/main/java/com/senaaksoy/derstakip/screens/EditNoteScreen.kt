@@ -19,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,12 +31,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.components.EditIconButton
 import com.senaaksoy.derstakip.components.EditTextField
 import com.senaaksoy.derstakip.roomDb.Note
+import com.senaaksoy.derstakip.viewModel.NoteViewModel
 
 @Composable
 fun EditNoteScreen(
@@ -49,6 +52,9 @@ fun EditNoteScreen(
     val note =noteList.firstOrNull{it.id==noteId}
     var title by rememberSaveable { mutableStateOf(note?.title ?: "") }
     var noteContent by rememberSaveable { mutableStateOf(note?.noteContent ?: "") }
+
+
+
 
     Column(
         modifier = Modifier
@@ -68,7 +74,7 @@ fun EditNoteScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "00:00:00",
+                    text = "",
                     fontSize = 30.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White

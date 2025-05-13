@@ -27,5 +27,8 @@ data class Note(
     val title: String,
 
     @ColumnInfo(name = "note_content")
-    val noteContent: String
+    val noteContent: String,
+
+    @ColumnInfo(name = "duration_millis")
+    val durationMillis: Long = 0
 )

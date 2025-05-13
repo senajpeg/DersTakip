@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senaaksoy.derstakip.repository.NoteRepository
 import com.senaaksoy.derstakip.roomDb.Note
+import com.senaaksoy.derstakip.timer.StudyTimer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,14 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
 
     private val _uiState = MutableStateFlow<List<Note>>(emptyList())
     val uiState: StateFlow<List<Note>> = _uiState.asStateFlow()
+
+    val studyTimer = StudyTimer()
+    val timerDisplay = studyTimer.elapsedTime
+
+    private val _timerState = MutableStateFlow(TimerState.INITIAL)
+    val timerState: StateFlow<TimerState> = _timerState.asStateFlow()
+
+
 
     fun getNotesForCourse(courseId: Int) {
         viewModelScope.launch {
@@ -41,12 +50,12 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         inputNoteContent=noteContent
     }
 
-
     fun saveNote(courseId: Int, title: String, noteContent: String) {
         val newNote = Note(
             courseId = courseId,
             title = title,
-            noteContent = noteContent
+            noteContent = noteContent,
+            durationMillis = timerDisplay.value
         )
         addNoteToDb(newNote)
     }
@@ -59,10 +68,15 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     }
 
     fun editNotes(id: Int, courseId: Int,title: String,noteContent: String){
+        val note = _uiState.value.find { it.id == id }
+        val durationMillis = note?.durationMillis ?: timerDisplay.value
+
         val newNotes=Note(id = id,
             title = title,
             noteContent = noteContent,
-            courseId = courseId)
+            courseId = courseId,
+            durationMillis = durationMillis
+        )
         updateNote(newNotes)
     }
 
@@ -82,5 +96,36 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     fun clearNotes() {
         inputTitle = ""
         inputNoteContent=""
+    }
+
+    fun startTimer() {
+        studyTimer.start()
+        _timerState.value = TimerState.RUNNING
+    }
+
+    fun pauseTimer() {
+        studyTimer.pause()
+        _timerState.value = TimerState.PAUSED
+    }
+
+    fun resetTimer() {
+        studyTimer.reset()
+        _timerState.value = TimerState.RESET
+    }
+
+    fun resumeTimer() {
+        studyTimer.resume()
+        _timerState.value = TimerState.RUNNING
+    }
+    override fun onCleared() {
+        super.onCleared()
+        studyTimer.pause()
+    }
+
+    enum class TimerState {
+        INITIAL,
+        RUNNING,
+        PAUSED,
+        RESET
     }
 }

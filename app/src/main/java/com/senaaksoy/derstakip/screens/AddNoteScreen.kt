@@ -37,12 +37,18 @@ fun AddNoteScreen(
     navController: NavController,
     title: String,
     setTitle: (String) -> Unit,
-    saveNote: (Int,String,String) -> Unit,
+    saveNote: (Int, String, String) -> Unit,
     noteContent: String,
-    setNoteContent :(String)->Unit,
-    courseId : Int?,
-    clearItem:()->Unit,
-    currentRoute : String?
+    setNoteContent: (String) -> Unit,
+    courseId: Int?,
+    clearItem: () -> Unit,
+    currentRoute: String?,
+    formattedTime: String,
+    startTimer: () -> Unit,
+    resetTimer: () -> Unit,
+    resumeTimer: () -> Unit,
+    pauseTimer: () -> Unit,
+    timerState:  String
 
 ) {
 
@@ -64,7 +70,7 @@ fun AddNoteScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "00:00:00",
+                    text = formattedTime,
                     modifier = Modifier.padding(24.dp),
                     fontSize = 30.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -81,26 +87,26 @@ fun AddNoteScreen(
         ) {
             EditIconButton(
                 icon = Icons.Filled.PlayArrow,
-                onClick = {},
-                isEnabled = true,
+                onClick = { startTimer() },
+                isEnabled = timerState == "initial" || timerState == "reset",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.RestartAlt,
-                onClick = {},
-                isEnabled = true,
+                onClick = { resetTimer() },
+                isEnabled = timerState == "paused",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.PlayCircle,
-                onClick = {},
-                isEnabled = true,
+                onClick = { resumeTimer() },
+                isEnabled = timerState == "paused",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.Stop,
-                onClick = {},
-                isEnabled = true,
+                onClick = { pauseTimer() },
+                isEnabled = timerState == "running",
                 modifier = Modifier.weight(1f)
             )
 
@@ -118,21 +124,23 @@ fun AddNoteScreen(
         ) {
             EditTextField(
                 value = title,
-                onValueChange = {setTitle(it)},
+                onValueChange = { setTitle(it) },
                 label = stringResource(R.string.konu_basligi)
             )
             EditTextField(
                 value = noteContent,
-                onValueChange = {setNoteContent(it)},
+                onValueChange = { setNoteContent(it) },
                 label = stringResource(R.string.calisma_detayları)
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         EditButton(
             onClick = {
+                pauseTimer()
+                saveNote(courseId!!, title, noteContent)
                 clearItem()
-                saveNote(courseId!!,title,noteContent)
-                      navController.popBackStack()},
+                navController.popBackStack()
+            },
             text = R.string.kaydet,
             enabled = title.isNotBlank() && noteContent.isNotBlank(),
             isIconVisible = false

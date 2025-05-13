@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +38,8 @@ fun AppNavigation(
     val noteUiState by noteViewModel.uiState.collectAsStateWithLifecycle()
     val groupedNotes = noteUiState.groupBy { it.title }
 
-
+    val elapsedTime by noteViewModel.timerDisplay.collectAsState()
+    val formattedTime = noteViewModel.studyTimer.formatTime(elapsedTime)
 
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val currentRoute = currentBackStackEntry?.destination?.route ?: Screen.CourseListScreen.route
@@ -92,7 +94,8 @@ fun AppNavigation(
                         navController = navController,
                         courseId = courseId,
                         groupedNotes = groupedNotes,
-                        clearItem = {noteViewModel.clearNotes()}
+                        clearItem = {noteViewModel.clearNotes()},
+                        resetTimer = {noteViewModel.resetTimer()}
                     )
                 }
                 composable(
@@ -100,6 +103,14 @@ fun AppNavigation(
                     arguments = listOf(navArgument("courseId"){type=NavType.IntType})
                 ) {backStackEntry->
                     val courseId=backStackEntry.arguments?.getInt(("courseId"))
+
+                    val currentTimerState by noteViewModel.timerState.collectAsState()
+                    val timerStateString = when (currentTimerState) {
+                        NoteViewModel.TimerState.INITIAL -> "initial"
+                        NoteViewModel.TimerState.RUNNING -> "running"
+                        NoteViewModel.TimerState.PAUSED -> "paused"
+                        NoteViewModel.TimerState.RESET -> "reset"
+                    }
                     AddNoteScreen(
                         navController = navController,
                         title = noteViewModel.inputTitle,
@@ -110,7 +121,13 @@ fun AppNavigation(
                                    noteViewModel.getNotesForCourse(id)},
                         currentRoute = currentRoute,
                         clearItem = {noteViewModel.clearNotes()},
-                        courseId = courseId
+                        courseId = courseId,
+                        formattedTime = formattedTime,
+                        startTimer = { noteViewModel.startTimer() },
+                        resetTimer = { noteViewModel.resetTimer() },
+                        resumeTimer = { noteViewModel.resumeTimer() },
+                        pauseTimer = { noteViewModel.pauseTimer() },
+                        timerState = timerStateString
                     )
 
                 }

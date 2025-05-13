@@ -27,13 +27,15 @@ import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.navigation.Screen
 import com.senaaksoy.derstakip.roomDb.Note
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun CourseDetailScreen(
     navController: NavController,
     courseId: Int?,
     groupedNotes: Map<String, List<Note>>,
-    clearItem: () -> Unit
+    clearItem: () -> Unit,
+    resetTimer: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -42,13 +44,12 @@ fun CourseDetailScreen(
         EditButton(
             onClick = {
                 clearItem()
+                resetTimer()
                 navController.navigate("${Screen.AddNoteScreen.route}/${courseId}") },
             isIconVisible = true,
             icon = Icons.Filled.Add,
             text = R.string.not_ekle
-
         )
-
 
         HorizontalDivider(
             color = Color(0xFFCDBBD0),
@@ -65,42 +66,56 @@ fun CourseDetailScreen(
                             .padding(16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFD3CBDA))
                     ) {
-                        Column(modifier = Modifier.padding(16.dp).fillMaxSize(),
-                            ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = title,
-                                    style = MaterialTheme.typography.titleLarge
-                                )
-                                Spacer(modifier = Modifier.weight(1f))
-                                if (notes.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxSize(),
+                        ) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+
+                            notes.forEachIndexed { index, note ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp),
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(end = 8.dp)
+                                    ) {
+                                        Text(
+                                            text = "${index + 1}. ${note.noteContent}"
+                                        )
+                                        if (note.durationMillis > 0) {
+                                            Text(
+                                                text = "Süre: ${formatTime(note.durationMillis)}",
+                                                modifier = Modifier.padding(start = 4.dp),
+                                                color = Color(0xFF887A9D)
+                                            )
+                                        }
+                                    }
+
                                     Icon(
                                         imageVector = Icons.Filled.Edit,
                                         contentDescription = null,
                                         modifier = Modifier.clickable {
-                                            navController.navigate("${Screen.EditNoteScreen.route}/${courseId}/${notes.first().id}")
+                                            navController.navigate("${Screen.EditNoteScreen.route}/${courseId}/${note.id}")
                                         }
                                     )
                                 }
-                            }
 
-                            notes.forEach { note ->
-
-                                    Column(modifier = Modifier.fillMaxWidth()) {
-                                        Text(
-                                            text = note.noteContent
-                                        )
-
-                                }
-                                if (note != notes.last()) {
+                                if (index < notes.size - 1) {
                                     HorizontalDivider(
                                         color = Color(0xFFCDBBD0),
                                         thickness = 0.5.dp,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(horizontal = 16.dp)
+                                            .padding(vertical = 8.dp)
                                     )
                                 }
                             }
@@ -110,4 +125,11 @@ fun CourseDetailScreen(
             }
         }
     }
+}
+
+private fun formatTime(millis: Long): String {
+    val hours = TimeUnit.MILLISECONDS.toHours(millis)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
+    return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
