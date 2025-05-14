@@ -1,16 +1,11 @@
 package com.senaaksoy.derstakip
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -24,18 +19,6 @@ import java.util.concurrent.TimeUnit
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    100
-                )
-            }
-        }
-
 
         enableEdgeToEdge()
         setContent {
@@ -43,19 +26,23 @@ class MainActivity : ComponentActivity() {
                 AppNavigation()
             }
         }
-        schedulePeriodicNotification()
+        scheduleNotificationWork()
+
     }
+    private fun scheduleNotificationWork() {
+        val workManager = WorkManager.getInstance(applicationContext)
 
-    private fun schedulePeriodicNotification() {
-
-        val notificationWorkRequest = PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
-            .setInitialDelay(15, TimeUnit.MINUTES)
+        val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(
+            15, TimeUnit.MINUTES
+        )
+           // .setInitialDelay(15, TimeUnit.MINUTES)
+            .setInitialDelay(0,TimeUnit.SECONDS)
             .build()
 
-        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-            "notification_work",
+        workManager.enqueueUniquePeriodicWork(
+            "studyReminder",
             ExistingPeriodicWorkPolicy.KEEP,
-            notificationWorkRequest
+            workRequest
         )
     }
 
