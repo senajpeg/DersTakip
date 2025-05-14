@@ -36,6 +36,7 @@ fun CourseDetailScreen(
     groupedNotes: Map<String, List<Note>>,
     clearItem: () -> Unit,
     resetTimer: () -> Unit,
+    formatTime: (Long) -> String
 
 
 ) {
@@ -95,7 +96,7 @@ fun CourseDetailScreen(
                                         )
                                         if (note.durationMillis > 0) {
                                             Text(
-                                                text = "Süre: ${formatStoredTime(note.durationMillis)}",
+                                                text = "Süre: ${formatTime(note.durationMillis)}",
                                                 modifier = Modifier.padding(start = 4.dp),
                                                 color = Color(0xFF887A9D)
                                             )
@@ -127,11 +128,4 @@ fun CourseDetailScreen(
             }
         }
     }
-}
-fun formatStoredTime(timeMillis: Long): String {
-    val hours = TimeUnit.MILLISECONDS.toHours(timeMillis)
-    val minutes = TimeUnit.MILLISECONDS.toMinutes(timeMillis) % 60
-    val seconds = TimeUnit.MILLISECONDS.toSeconds(timeMillis) % 60
-
-    return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }

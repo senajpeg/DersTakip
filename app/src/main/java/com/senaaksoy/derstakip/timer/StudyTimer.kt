@@ -11,11 +11,11 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class StudyTimer {
-    private val _elapsedTime = MutableStateFlow(0L)
+    private val _elapsedTime = MutableStateFlow(0L)//bura geçen süreyi milisaniye cinsinden tutacak
     val elapsedTime: StateFlow<Long> = _elapsedTime.asStateFlow()
 
-    private var timerJob: Job? = null
-    private var lastTimestamp = 0L
+    private var timerJob: Job? = null//zamanlayıcının çalışan coroutine işini temsil ediyo
+    private var lastTimestamp = 0L// zamanlayıcının son çalıştırılma zamanı
     private var isRunning = false
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)//bu timerı arka planda çalıştırıyor
@@ -24,7 +24,7 @@ class StudyTimer {
         if (isRunning) return
 
         isRunning = true
-        lastTimestamp = System.currentTimeMillis()
+        lastTimestamp = System.currentTimeMillis() //mevcut zamanı yakalıyor
 
         timerJob = coroutineScope.launch {
             while (isRunning) {
@@ -39,7 +39,7 @@ class StudyTimer {
 
     fun pause() {
         isRunning = false
-        timerJob?.cancel()
+        timerJob?.cancel()//coroutine işini iptal ediyor burada
     }
 
     fun reset() {
@@ -50,7 +50,7 @@ class StudyTimer {
     fun resume() {
         start()
     }
-    fun setElapsedTime(timeInMillis: Long) {
+    fun setElapsedTime(timeInMillis: Long) { //zamanlayıcıyı belli bir değere ayarlar
         pause()
         _elapsedTime.value = timeInMillis
     }

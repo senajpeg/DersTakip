@@ -60,7 +60,7 @@ fun EditNoteScreen(
 
     val timerInitialized = rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {//Bu mevcut notun süresiyle sadece bir kez başlatılmasını sağlamak için kullanılıyo
         if (!timerInitialized.value && note != null) {
             setTimerValue(note.durationMillis)
             timerInitialized.value = true

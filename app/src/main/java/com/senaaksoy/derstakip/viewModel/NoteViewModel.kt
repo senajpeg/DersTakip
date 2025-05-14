@@ -25,8 +25,15 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     val studyTimer = StudyTimer()
     val timerDisplay = studyTimer.elapsedTime
 
-    private val _timerState = MutableStateFlow(TimerState.INITIAL)
+    private val _timerState = MutableStateFlow(TimerState.INITIAL)//geçerli durumu izlerken kullanacağımız flow değişkeni
     val timerState: StateFlow<TimerState> = _timerState.asStateFlow()
+
+    enum class TimerState { //bunu yapmamın sebbei zamanlayıcının geçerli durumunu izlemek
+        INITIAL,
+        RUNNING,
+        PAUSED,
+        RESET
+    }
 
 
 
@@ -127,7 +134,7 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         studyTimer.resume()
         _timerState.value = TimerState.RUNNING
     }
-    fun setTimerValue(value: Long) {
+    fun setTimerValue(value: Long) { //zamanlayıcıyı belli bir değere ayarlıyo
         studyTimer.setElapsedTime(value)
         _timerState.value = TimerState.INITIAL
     }
@@ -138,10 +145,5 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         studyTimer.pause()
     }
 
-    enum class TimerState {
-        INITIAL,
-        RUNNING,
-        PAUSED,
-        RESET
-    }
+
 }

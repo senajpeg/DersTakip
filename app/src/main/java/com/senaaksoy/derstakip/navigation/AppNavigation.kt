@@ -31,21 +31,24 @@ import com.senaaksoy.derstakip.viewModel.NoteViewModel
 @Composable
 fun AppNavigation(
     courseViewModel: CourseViewModel = hiltViewModel(),
-    noteViewModel: NoteViewModel= hiltViewModel()
+    noteViewModel: NoteViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
     val courseUistate by courseViewModel.uiState.collectAsStateWithLifecycle()
     val noteUiState by noteViewModel.uiState.collectAsStateWithLifecycle()
     val groupedNotes = noteUiState.groupBy { it.title }
 
-    val elapsedTime by noteViewModel.timerDisplay.collectAsState()
-    val formattedTime = noteViewModel.studyTimer.formatTime(elapsedTime)
-
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val currentRoute = currentBackStackEntry?.destination?.route ?: Screen.CourseListScreen.route
 
     var currentCourseName by remember { mutableStateOf<String?>(null) }
 
+    val elapsedTime by noteViewModel.timerDisplay.collectAsState()
+    val formattedTime = noteViewModel.studyTimer.formatTime(elapsedTime)
+
+    val formatTimeFunction: (Long) -> String = { timeMillis ->
+        noteViewModel.studyTimer.formatTime(timeMillis)
+    }
 
     val currentTimerState by noteViewModel.timerState.collectAsState()
     val timerStateString = when (currentTimerState) {
@@ -54,9 +57,6 @@ fun AppNavigation(
         NoteViewModel.TimerState.PAUSED -> "paused"
         NoteViewModel.TimerState.RESET -> "reset"
     }
-
-
-
 
     Scaffold(
         topBar = {
@@ -76,110 +76,116 @@ fun AppNavigation(
             )
         }
     ) { paddingValues ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.CourseListScreen.route,
-                modifier = Modifier.fillMaxSize().padding(paddingValues)
-            ) {
-                composable(route = Screen.CourseListScreen.route) {
-                    CourseListScreen(
-                        navController = navController,
-                        courseList = courseUistate,
-                        courseName = courseViewModel.inputCourseName,
-                        setCourseName = {courseViewModel.upDateCourseName(it)},
-                        saveCourse = {name->courseViewModel.saveCourse(name)},
-                        clearItem = {courseViewModel.clearCourses()},
-                        upDateCourse = {course-> courseViewModel.upDateCourse(course)}
-                    )
-
-                }
-                composable(
-                    route ="CourseDetailScreen/{courseId}",
-                    arguments = listOf(navArgument("courseId"){type=NavType.IntType})
-                ) {
-                    backStackEntry->
-                    val courseId=backStackEntry.arguments?.getInt(("courseId"))
-                    LaunchedEffect(courseId) {
-                        courseId?.let {
-                            noteViewModel.getNotesForCourse(it)
-                        }
-                    }
-                    val course = courseUistate.find { it.id == courseId }
-                    currentCourseName = course?.name
-                    CourseDetailScreen(
-                        navController = navController,
-                        courseId = courseId,
-                        groupedNotes = groupedNotes,
-                        clearItem = {noteViewModel.clearNotes()},
-                        resetTimer = {noteViewModel.resetTimer()}
-                    )
-                }
-                composable(
-                    route ="AddNoteScreen/{courseId}",
-                    arguments = listOf(navArgument("courseId"){type=NavType.IntType})
-                ) {backStackEntry->
-                    val courseId=backStackEntry.arguments?.getInt(("courseId"))
-
-                    AddNoteScreen(
-                        navController = navController,
-                        title = noteViewModel.inputTitle,
-                        noteContent = noteViewModel.inputNoteContent,
-                        setTitle = {noteViewModel.upDateTitle(it)},
-                        setNoteContent = {noteViewModel.upDateNoteContent(it)},
-                        saveNote = {id,title,content->noteViewModel.saveNote(id,title,content)
-                                   noteViewModel.getNotesForCourse(id)},
-                        currentRoute = currentRoute,
-                        clearItem = {noteViewModel.clearNotes()},
-                        courseId = courseId,
-                        formattedTime = formattedTime,
-                        startTimer = { noteViewModel.startTimer() },
-                        resetTimer = { noteViewModel.resetTimer() },
-                        resumeTimer = { noteViewModel.resumeTimer() },
-                        pauseTimer = { noteViewModel.pauseTimer() },
-                        timerState = timerStateString
-                    )
-
-                }
-                composable(
-                    route = "EditNoteScreen/{courseId}/{noteId}",
-                    arguments = listOf(
-                        navArgument("courseId"){type=NavType.IntType},
-                        navArgument("noteId"){type=NavType.IntType}
-                    )
-                    ) {backStackEntry->
-                    val courseId=backStackEntry.arguments?.getInt(("courseId"))
-                    val noteId = backStackEntry.arguments?.getInt("noteId")
-
-                    EditNoteScreen(
-                        navController = navController,
-                        courseId = courseId,
-                        noteId = noteId,
-                        noteList=noteUiState,
-                        editNotes={noteId,courseId,title,noteContent->noteViewModel.editNotes(noteId,courseId,title,noteContent)
-                        noteViewModel.getNotesForCourse(courseId)},
-                        deleteNote = {note-> noteViewModel.deleteNote(note)},
-                        startTimer = { noteViewModel.startTimer() },
-                        resetTimer = { noteViewModel.resetTimer() },
-                        resumeTimer = { noteViewModel.resumeTimer() },
-                        pauseTimer = { noteViewModel.pauseTimer() },
-                        formattedTime = formattedTime,
-                        timerState = timerStateString,
-                        setTimerValue = { noteViewModel.setTimerValue(it) }
-
-
-                    )
-
-                }
-                composable(route = Screen.StatisticsScreen.route) {
-                    StatisticsScreen(
-                        navController = navController
-                    )
-                }
-
+        NavHost(
+            navController = navController,
+            startDestination = Screen.CourseListScreen.route,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            composable(route = Screen.CourseListScreen.route) {
+                CourseListScreen(
+                    navController = navController,
+                    courseList = courseUistate,
+                    courseName = courseViewModel.inputCourseName,
+                    setCourseName = { courseViewModel.upDateCourseName(it) },
+                    saveCourse = { name -> courseViewModel.saveCourse(name) },
+                    clearItem = { courseViewModel.clearCourses() },
+                    upDateCourse = { course -> courseViewModel.upDateCourse(course) }
+                )
 
             }
+            composable(
+                route = "CourseDetailScreen/{courseId}",
+                arguments = listOf(navArgument("courseId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val courseId = backStackEntry.arguments?.getInt(("courseId"))
+                LaunchedEffect(courseId) {
+                    courseId?.let {
+                        noteViewModel.getNotesForCourse(it)
+                    }
+                }
+                val course = courseUistate.find { it.id == courseId }
+                currentCourseName = course?.name
+                CourseDetailScreen(
+                    navController = navController,
+                    courseId = courseId,
+                    groupedNotes = groupedNotes,
+                    clearItem = { noteViewModel.clearNotes() },
+                    resetTimer = { noteViewModel.resetTimer() },
+                    formatTime = formatTimeFunction
+                )
+            }
+            composable(
+                route = "AddNoteScreen/{courseId}",
+                arguments = listOf(navArgument("courseId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val courseId = backStackEntry.arguments?.getInt(("courseId"))
+
+                AddNoteScreen(
+                    navController = navController,
+                    title = noteViewModel.inputTitle,
+                    noteContent = noteViewModel.inputNoteContent,
+                    setTitle = { noteViewModel.upDateTitle(it) },
+                    setNoteContent = { noteViewModel.upDateNoteContent(it) },
+                    saveNote = { id, title, content ->
+                        noteViewModel.saveNote(id, title, content)
+                        noteViewModel.getNotesForCourse(id)
+                    },
+                    currentRoute = currentRoute,
+                    clearItem = { noteViewModel.clearNotes() },
+                    courseId = courseId,
+                    formattedTime = formattedTime,
+                    startTimer = { noteViewModel.startTimer() },
+                    resetTimer = { noteViewModel.resetTimer() },
+                    resumeTimer = { noteViewModel.resumeTimer() },
+                    pauseTimer = { noteViewModel.pauseTimer() },
+                    timerState = timerStateString
+                )
+
+            }
+            composable(
+                route = "EditNoteScreen/{courseId}/{noteId}",
+                arguments = listOf(
+                    navArgument("courseId") { type = NavType.IntType },
+                    navArgument("noteId") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
+                val courseId = backStackEntry.arguments?.getInt(("courseId"))
+                val noteId = backStackEntry.arguments?.getInt("noteId")
+
+                EditNoteScreen(
+                    navController = navController,
+                    courseId = courseId,
+                    noteId = noteId,
+                    noteList = noteUiState,
+                    editNotes = { noteId, courseId, title, noteContent ->
+                        noteViewModel.editNotes(noteId, courseId, title, noteContent)
+                        noteViewModel.getNotesForCourse(courseId)
+                    },
+                    deleteNote = { note -> noteViewModel.deleteNote(note) },
+                    startTimer = { noteViewModel.startTimer() },
+                    resetTimer = { noteViewModel.resetTimer() },
+                    resumeTimer = { noteViewModel.resumeTimer() },
+                    pauseTimer = { noteViewModel.pauseTimer() },
+                    formattedTime = formattedTime,
+                    timerState = timerStateString,
+                    setTimerValue = { noteViewModel.setTimerValue(it) }
+
+
+                )
+
+            }
+            composable(route = Screen.StatisticsScreen.route) {
+                StatisticsScreen(
+                    navController = navController
+                )
+            }
+
 
         }
 
-
     }
+
+
+}
