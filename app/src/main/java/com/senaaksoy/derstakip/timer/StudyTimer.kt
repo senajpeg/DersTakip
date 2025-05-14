@@ -18,7 +18,7 @@ class StudyTimer {
     private var lastTimestamp = 0L
     private var isRunning = false
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)//bu timerı arka planda çalıştırıyor
 
     fun start() {
         if (isRunning) return

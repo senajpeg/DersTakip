@@ -1,5 +1,6 @@
 package com.senaaksoy.derstakip.viewModel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,7 +34,10 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         viewModelScope.launch {
             noteRepo.getNotesForCourse(courseId).collect { notes ->
                 _uiState.value = notes
+                Log.d("Kontrol", "Kalan not sayısı: ${notes.size}")
+
             }
+
         }
     }
 
@@ -66,6 +70,13 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
             getNotesForCourse(note.courseId)
         }
     }
+    fun deleteNotesByCourseId(courseId: Int, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            noteRepo.deleteNotesByCourseId(courseId)
+            onComplete()
+        }
+    }
+
 
     fun editNotes(id: Int, courseId: Int,title: String,noteContent: String){
         val updatedDurationMillis = timerDisplay.value
@@ -118,12 +129,9 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     }
     fun setTimerValue(value: Long) {
         studyTimer.setElapsedTime(value)
-        if (value > 0) {
-            _timerState.value = TimerState.INITIAL
-        } else {
-            _timerState.value = TimerState.INITIAL
-        }
+        _timerState.value = TimerState.INITIAL
     }
+
 
     override fun onCleared() {
         super.onCleared()

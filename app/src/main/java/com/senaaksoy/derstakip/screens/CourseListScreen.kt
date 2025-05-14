@@ -1,5 +1,6 @@
 package com.senaaksoy.derstakip.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -133,14 +135,21 @@ fun CourseListScreen(
             )
         }
         if (isDialogOpen) {
+            val context = LocalContext.current
+            val errorText = stringResource(R.string.ders_zaten_var)
             EditAlertDialog(
                 title = stringResource(R.string.yeni_ders_ekle),
                 value = courseName,
                 onValueChange = setCourseName,
                 onConfirm = {
-                    saveCourse(courseName)
-                    isDialogOpen = false
-                    clearItem()
+                    val alreadyExists = courseList.any { it.name.equals(courseName, ignoreCase = true) }
+                    if (!alreadyExists) {
+                        saveCourse(courseName)
+                        isDialogOpen = false
+                        clearItem()
+                    } else {
+                        Toast.makeText(context, errorText, Toast.LENGTH_SHORT).show()
+                    }
                 },
                 onDismiss = {
                     isDialogOpen = false

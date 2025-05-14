@@ -24,4 +24,5 @@
     <string name="guncelle">Güncelle</string>
     <string name="ders_guncelleme">Ders Güncelleme</string>
     <string name="ders_ekleme">Ders Ekleme</string>
+    <string name="ders_zaten_var">Bu isimde bir ders zaten var.</string>
 </resources>

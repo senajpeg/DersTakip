@@ -65,7 +65,14 @@ fun AppNavigation(
                 navController = navController,
                 courseName = currentCourseName,
                 courseToDelete = courseUistate.find { it.name == currentCourseName },
-                onDeleteCourse = { course -> courseViewModel.deleteCourse(course) }
+                onDeleteCourse = { course ->
+                    course.let {
+                        noteViewModel.deleteNotesByCourseId(it.id) {
+                            courseViewModel.deleteCourse(it)
+                        }
+                    }
+                }
+
             )
         }
     ) { paddingValues ->

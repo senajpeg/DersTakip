@@ -31,14 +31,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.components.EditIconButton
 import com.senaaksoy.derstakip.components.EditTextField
 import com.senaaksoy.derstakip.roomDb.Note
-import com.senaaksoy.derstakip.viewModel.NoteViewModel
 
 @Composable
 fun EditNoteScreen(
@@ -60,9 +58,12 @@ fun EditNoteScreen(
     var title by rememberSaveable { mutableStateOf(note?.title ?: "") }
     var noteContent by rememberSaveable { mutableStateOf(note?.noteContent ?: "") }
 
-    LaunchedEffect(note) {
-        note?.let {
-            setTimerValue(it.durationMillis)
+    val timerInitialized = rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (!timerInitialized.value && note != null) {
+            setTimerValue(note.durationMillis)
+            timerInitialized.value = true
         }
     }
 
@@ -101,7 +102,9 @@ fun EditNoteScreen(
         ) {
             EditIconButton(
                 icon = Icons.Filled.PlayArrow,
-                onClick = {startTimer()},
+                onClick = {
+                    note?.let { setTimerValue(it.durationMillis) }
+                    startTimer()},
                 isEnabled = timerState == "reset",
                 modifier = Modifier.weight(1f)
             )
