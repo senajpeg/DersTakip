@@ -41,10 +41,10 @@ import com.senaaksoy.derstakip.roomDb.Note
 @Composable
 fun EditNoteScreen(
     navController: NavController,
-    courseId : Int?,
-    noteId:Int?,
+    courseId: Int?,
+    noteId: Int?,
     noteList: List<Note>,
-    editNotes:(Int,Int,String,String)->Unit,
+    editNotes: (Int, Int, String, String) -> Unit,
     deleteNote: (Note) -> Unit,
     startTimer: () -> Unit,
     resetTimer: () -> Unit,
@@ -53,8 +53,8 @@ fun EditNoteScreen(
     formattedTime: String,
     timerState: String,
     setTimerValue: (Long) -> Unit
-){
-    val note =noteList.firstOrNull{it.id==noteId}
+) {
+    val note = noteList.firstOrNull { it.id == noteId }
     var title by rememberSaveable { mutableStateOf(note?.title ?: "") }
     var noteContent by rememberSaveable { mutableStateOf(note?.noteContent ?: "") }
 
@@ -81,7 +81,7 @@ fun EditNoteScreen(
             colors = CardDefaults.cardColors(containerColor = Color(0xFF887A9D))
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
@@ -104,25 +104,26 @@ fun EditNoteScreen(
                 icon = Icons.Filled.PlayArrow,
                 onClick = {
                     note?.let { setTimerValue(it.durationMillis) }
-                    startTimer()},
+                    startTimer()
+                },
                 isEnabled = timerState == "reset",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.RestartAlt,
-                onClick = {resetTimer()},
+                onClick = { resetTimer() },
                 isEnabled = timerState == "paused",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.PlayCircle,
-                onClick = {resumeTimer()},
+                onClick = { resumeTimer() },
                 isEnabled = timerState == "initial" || timerState == "paused",
                 modifier = Modifier.weight(1f)
             )
             EditIconButton(
                 icon = Icons.Filled.Stop,
-                onClick = {pauseTimer()},
+                onClick = { pauseTimer() },
                 isEnabled = timerState == "running",
                 modifier = Modifier.weight(1f)
             )
@@ -142,33 +143,36 @@ fun EditNoteScreen(
 
             EditTextField(
                 value = title,
-                onValueChange = {title = it},
-                label =stringResource(R.string.konu_basligi)
+                onValueChange = { title = it },
+                label = stringResource(R.string.konu_basligi)
             )
             EditTextField(
-                value =noteContent ,
-                onValueChange = {noteContent=it},
-                label =  stringResource(R.string.calisma_detayları)
+                value = noteContent,
+                onValueChange = { noteContent = it },
+                label = stringResource(R.string.calisma_detayları)
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         EditButton(
             onClick = {
-                editNotes(note!!.id,courseId!!,title,noteContent)
-                navController.popBackStack()},
+                editNotes(note!!.id, courseId!!, title, noteContent)
+                navController.popBackStack()
+            },
             text = R.string.guncelle,
             enabled = title.isNotBlank() && noteContent.isNotBlank(),
             isIconVisible = false
         )
         EditButton(
-            onClick = {note?.let{deleteNote(it)}
-                navController.popBackStack()},
+            onClick = {
+                note?.let { deleteNote(it) }
+                navController.popBackStack()
+            },
             text = R.string.notu_sil,
             isIconVisible = false
 
         )
         EditButton(
-            onClick = {navController.popBackStack()},
+            onClick = { navController.popBackStack() },
             text = R.string.iptal,
             isIconVisible = false
         )

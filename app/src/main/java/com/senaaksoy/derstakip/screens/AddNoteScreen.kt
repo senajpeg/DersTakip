@@ -66,7 +66,7 @@ fun AddNoteScreen(
             colors = CardDefaults.cardColors(containerColor = Color(0xFF887A9D))
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(

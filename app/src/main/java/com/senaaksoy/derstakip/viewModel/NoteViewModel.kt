@@ -64,8 +64,8 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     fun saveNote(courseId: Int, title: String, noteContent: String) {
         val newNote = Note(
             courseId = courseId,
-            title = title,
-            noteContent = noteContent,
+            title = title.uppercase(),
+            noteContent = noteContent.lowercase(),
             durationMillis = timerDisplay.value
         )
         addNoteToDb(newNote)

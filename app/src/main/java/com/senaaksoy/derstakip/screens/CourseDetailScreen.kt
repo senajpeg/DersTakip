@@ -3,7 +3,6 @@ package com.senaaksoy.derstakip.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,13 +20,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.navigation.Screen
 import com.senaaksoy.derstakip.roomDb.Note
-import java.util.concurrent.TimeUnit
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun CourseDetailScreen(
@@ -37,9 +39,8 @@ fun CourseDetailScreen(
     clearItem: () -> Unit,
     resetTimer: () -> Unit,
     formatTime: (Long) -> String
-
-
 ) {
+    val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -72,11 +73,11 @@ fun CourseDetailScreen(
                         Column(
                             modifier = Modifier
                                 .padding(16.dp)
-                                .fillMaxSize(),
+                                .fillMaxWidth(),
                         ) {
                             Text(
                                 text = title,
-                                style = MaterialTheme.typography.titleLarge
+                                style = MaterialTheme.typography.bodyLarge
                             )
 
                             notes.forEachIndexed { index, note ->
@@ -101,6 +102,12 @@ fun CourseDetailScreen(
                                                 color = Color(0xFF887A9D)
                                             )
                                         }
+                                        Text(
+                                            text = "Tarih: $currentDate",
+                                            modifier = Modifier.padding(start = 4.dp),
+                                            color = Color(0xFF887A9D)
+                                        )
+
                                     }
 
                                     Icon(
@@ -122,6 +129,30 @@ fun CourseDetailScreen(
                                     )
                                 }
                             }
+                            val totalDurationMillis = if (notes.isNotEmpty()) {
+                                notes.sumOf { (it.durationMillis / 1000) * 1000 }
+                            } else 0
+
+
+                            if (totalDurationMillis > 0 && notes.isNotEmpty()) {
+                                HorizontalDivider(
+                                    color = Color(0xFFCDBBD0),
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                )
+
+                                Text(
+                                    text = "Toplam: ${formatTime(totalDurationMillis)}",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF5D4777),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp)
+                                )
+                            }
+
                         }
                     }
                 }

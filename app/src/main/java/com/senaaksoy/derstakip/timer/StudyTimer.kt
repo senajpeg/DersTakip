@@ -56,9 +56,10 @@ class StudyTimer {
     }
 
     fun formatTime(millis: Long): String {
-        val hours = TimeUnit.MILLISECONDS.toHours(millis)
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
+        val roundedMillis = (millis / 1000) * 1000
+        val hours = TimeUnit.MILLISECONDS.toHours(roundedMillis)
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(roundedMillis) % 60
+        val seconds = TimeUnit.MILLISECONDS.toSeconds(roundedMillis) % 60
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 

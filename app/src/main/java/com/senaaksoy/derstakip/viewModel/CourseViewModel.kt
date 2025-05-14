@@ -44,7 +44,7 @@ class CourseViewModel @Inject constructor(private val courseRepo: CourseReposito
 
     fun saveCourse(courseName: String) {
         val newItem = Course(
-            name = courseName
+            name = courseName.uppercase()
         )
         addDb(newItem)
     }
