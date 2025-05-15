@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.type.Date
 import com.senaaksoy.derstakip.repository.NoteRepository
 import com.senaaksoy.derstakip.roomDb.Note
 import com.senaaksoy.derstakip.timer.StudyTimer
@@ -14,6 +15,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +39,13 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         RESET
     }
 
+    fun getAllNotes() {
+        viewModelScope.launch {
+            noteRepo.getAllNotes().collect { notes ->
+                _uiState.value = notes
+            }
+        }
+    }
 
 
     fun getNotesForCourse(courseId: Int) {
@@ -62,11 +73,13 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     }
 
     fun saveNote(courseId: Int, title: String, noteContent: String) {
+        val currentTimeMillis = System.currentTimeMillis()
         val newNote = Note(
             courseId = courseId,
             title = title.uppercase(),
             noteContent = noteContent.lowercase(),
-            durationMillis = timerDisplay.value
+            durationMillis = timerDisplay.value,
+            timestamp = currentTimeMillis
         )
         addNoteToDb(newNote)
     }
@@ -88,11 +101,15 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     fun editNotes(id: Int, courseId: Int,title: String,noteContent: String){
         val updatedDurationMillis = timerDisplay.value
 
+        val existingNote = _uiState.value.find { it.id == id }
+        val timestamp = existingNote?.timestamp ?: System.currentTimeMillis()
+
         val newNotes=Note(id = id,
             title = title,
             noteContent = noteContent,
             courseId = courseId,
-            durationMillis = updatedDurationMillis
+            durationMillis = updatedDurationMillis,
+            timestamp = timestamp
         )
         updateNote(newNotes)
     }
@@ -143,6 +160,10 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     override fun onCleared() {
         super.onCleared()
         studyTimer.pause()
+    }
+    fun formatDate(timestamp: Long): String {
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        return dateFormat.format(java.util.Date(timestamp))
     }
 
 

@@ -30,5 +30,8 @@ data class Note(
     val noteContent: String,
 
     @ColumnInfo(name = "duration_millis")
-    val durationMillis: Long = 0
+    val durationMillis: Long = 0,
+
+    @ColumnInfo
+    val timestamp: Long = System.currentTimeMillis()
 )

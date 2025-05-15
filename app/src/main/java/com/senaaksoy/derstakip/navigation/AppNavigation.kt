@@ -49,6 +49,10 @@ fun AppNavigation(
     val formatTimeFunction: (Long) -> String = { timeMillis ->
         noteViewModel.studyTimer.formatTime(timeMillis)
     }
+    val formatDateFunction: (Long) -> String = { timestamp ->
+        noteViewModel.formatDate(timestamp)
+    }
+
 
     val currentTimerState by noteViewModel.timerState.collectAsState()
     val timerStateString = when (currentTimerState) {
@@ -57,6 +61,7 @@ fun AppNavigation(
         NoteViewModel.TimerState.PAUSED -> "paused"
         NoteViewModel.TimerState.RESET -> "reset"
     }
+
 
     Scaffold(
         topBar = {
@@ -113,7 +118,8 @@ fun AppNavigation(
                     groupedNotes = groupedNotes,
                     clearItem = { noteViewModel.clearNotes() },
                     resetTimer = { noteViewModel.resetTimer() },
-                    formatTime = formatTimeFunction
+                    formatTime = formatTimeFunction,
+                    formatDate = formatDateFunction
                 )
             }
             composable(
@@ -177,8 +183,11 @@ fun AppNavigation(
 
             }
             composable(route = Screen.StatisticsScreen.route) {
+                LaunchedEffect(Unit) {
+                    noteViewModel.getAllNotes()
+                }
                 StatisticsScreen(
-                    navController = navController
+
                 )
             }
 

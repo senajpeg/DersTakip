@@ -16,6 +16,8 @@ class NoteRepository @Inject constructor(private val noteDao: NoteDao) {
     fun getNotesForCourse(courseId: Int): Flow<List<Note>> =
         noteDao.getNotesForCourse(courseId).flowOn(Dispatchers.IO).distinctUntilChanged()
 
+    fun getAllNotes(): Flow<List<Note>> = noteDao.getAllNotes()
+
     suspend fun deleteNotesByCourseId(courseId: Int) {
         noteDao.deleteNotesByCourseId(courseId)
     }

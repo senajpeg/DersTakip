@@ -38,9 +38,10 @@ fun CourseDetailScreen(
     groupedNotes: Map<String, List<Note>>,
     clearItem: () -> Unit,
     resetTimer: () -> Unit,
-    formatTime: (Long) -> String
+    formatTime: (Long) -> String,
+    formatDate: (Long) -> String
 ) {
-    val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -103,7 +104,7 @@ fun CourseDetailScreen(
                                             )
                                         }
                                         Text(
-                                            text = "Tarih: $currentDate",
+                                            text = "Tarih: ${formatDate(note.timestamp)}",
                                             modifier = Modifier.padding(start = 4.dp),
                                             color = Color(0xFF887A9D)
                                         )
