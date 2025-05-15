@@ -55,7 +55,6 @@ class StatisticsViewModel @Inject constructor(
             courseRepository.allCourses().collect { courses ->
                 _courseMap.value = courses.associate { it.id to it.name }
 
-                // Now load all notes
                 noteRepository.getAllNotes().collect { notes ->
                     _allNotes.value = notes
                     calculateStatistics(notes)
