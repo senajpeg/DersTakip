@@ -14,35 +14,36 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.viewModel.StatisticsViewModel
 
 @Composable
 fun StatisticsScreen(
-    viewModel: StatisticsViewModel = hiltViewModel()
+    dailyStats: Map<String, List<StatisticsViewModel.CourseStudyTime>>,
+    weeklyStats: Map<String, List<StatisticsViewModel.CourseStudyTime>>,
+    monthlyStats: Map<String, List<StatisticsViewModel.CourseStudyTime>>,
+    formatTime: (Long) -> String,
+    calculateTotalTime: (List<StatisticsViewModel.CourseStudyTime>) -> Long
 ) {
-    val dailyStats by viewModel.dailyStats.collectAsState()
-    val weeklyStats by viewModel.weeklyStats.collectAsState()
-    val monthlyStats by viewModel.monthlyStats.collectAsState()
-
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf("Daily", "Weekly", "Monthly")
 
     Column(
@@ -54,15 +55,15 @@ fun StatisticsScreen(
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = { selectedTabIndex = index },
-                    text = { Text(text = title, color = Color(0xFF8177A7) ) }
+                    text = { Text(text = title, color = Color(0xFF8177A7)) }
                 )
             }
         }
 
         when (selectedTabIndex) {
-            0 -> DailyStatistics(dailyStats, viewModel)
-            1 -> WeeklyStatistics(weeklyStats, viewModel)
-            2 -> MonthlyStatistics(monthlyStats, viewModel)
+            0 -> DailyStatistics(dailyStats, formatTime, calculateTotalTime)
+            1 -> WeeklyStatistics(weeklyStats, formatTime, calculateTotalTime)
+            2 -> MonthlyStatistics(monthlyStats, formatTime, calculateTotalTime)
         }
     }
 }
@@ -70,7 +71,8 @@ fun StatisticsScreen(
 @Composable
 fun DailyStatistics(
     dailyStats: Map<String, List<StatisticsViewModel.CourseStudyTime>>,
-    viewModel: StatisticsViewModel
+    formatTime: (Long) -> String,
+    calculateTotalTime: (List<StatisticsViewModel.CourseStudyTime>) -> Long
 ) {
     if (dailyStats.isEmpty()) {
         EmptyStatsMessage()
@@ -84,9 +86,10 @@ fun DailyStatistics(
     ) {
         dailyStats.forEach { (date, courseStats) ->
             StatisticsCard(
-                title = "Daily Statistics - $date",
+                title = "Günlük İstatistik - $date",
                 stats = courseStats,
-                viewModel = viewModel
+                formatTime = formatTime,
+                calculateTotalTime = calculateTotalTime
             )
         }
     }
@@ -95,7 +98,8 @@ fun DailyStatistics(
 @Composable
 fun WeeklyStatistics(
     weeklyStats: Map<String, List<StatisticsViewModel.CourseStudyTime>>,
-    viewModel: StatisticsViewModel
+    formatTime: (Long) -> String,
+    calculateTotalTime: (List<StatisticsViewModel.CourseStudyTime>) -> Long
 ) {
     if (weeklyStats.isEmpty()) {
         EmptyStatsMessage()
@@ -111,7 +115,8 @@ fun WeeklyStatistics(
             StatisticsCard(
                 title = weekLabel,
                 stats = courseStats,
-                viewModel = viewModel
+                formatTime = formatTime,
+                calculateTotalTime = calculateTotalTime
             )
         }
     }
@@ -120,7 +125,8 @@ fun WeeklyStatistics(
 @Composable
 fun MonthlyStatistics(
     monthlyStats: Map<String, List<StatisticsViewModel.CourseStudyTime>>,
-    viewModel: StatisticsViewModel
+    formatTime: (Long) -> String,
+    calculateTotalTime: (List<StatisticsViewModel.CourseStudyTime>) -> Long
 ) {
     if (monthlyStats.isEmpty()) {
         EmptyStatsMessage()
@@ -136,7 +142,8 @@ fun MonthlyStatistics(
             StatisticsCard(
                 title = monthLabel,
                 stats = courseStats,
-                viewModel = viewModel
+                formatTime = formatTime,
+                calculateTotalTime = calculateTotalTime
             )
         }
     }
@@ -146,14 +153,15 @@ fun MonthlyStatistics(
 fun StatisticsCard(
     title: String,
     stats: List<StatisticsViewModel.CourseStudyTime>,
-    viewModel: StatisticsViewModel
+    formatTime: (Long) -> String,
+    calculateTotalTime: (List<StatisticsViewModel.CourseStudyTime>) -> Long
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-         colors = CardDefaults.cardColors(containerColor = Color(0xFFD3CBDA))
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFD3CBDA))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -169,7 +177,7 @@ fun StatisticsCard(
 
             if (stats.isEmpty()) {
                 Text(
-                    text = "No study data available for this period",
+                    text = stringResource(R.string.bu_doneme_ait_calisma_verisi_yok),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
@@ -184,15 +192,15 @@ fun StatisticsCard(
                     items(stats) { stat ->
                         CourseTimeRow(
                             courseName = stat.courseName,
-                            studyTime = viewModel.formatTime(stat.durationMillis)
+                            studyTime = formatTime(stat.durationMillis)
                         )
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     }
 
                     item {
                         Spacer(modifier = Modifier.height(8.dp))
                         TotalTimeRow(
-                            totalTime = viewModel.formatTime(viewModel.calculateTotalTime(stats))
+                            totalTime = formatTime(calculateTotalTime(stats))
                         )
                     }
                 }
@@ -234,7 +242,7 @@ fun TotalTimeRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "Total Study Time",
+            text = stringResource(R.string.toplam_calisma_suresi),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold
         )
@@ -253,7 +261,7 @@ fun EmptyStatsMessage() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "No statistics available",
+            text = stringResource(R.string.mevcut_istatistik_yok),
             style = MaterialTheme.typography.bodyLarge
         )
     }

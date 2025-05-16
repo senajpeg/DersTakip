@@ -25,10 +25,8 @@ class StatisticsViewModel @Inject constructor(
 
 
     private val _allNotes = MutableStateFlow<List<Note>>(emptyList())
-    val allNotes: StateFlow<List<Note>> = _allNotes.asStateFlow()
+    private val _courseMap = MutableStateFlow<Map<Int, String>>(emptyMap())//ders id si ile ders adını eşleştiren harita
 
-    private val _courseMap = MutableStateFlow<Map<Int, String>>(emptyMap())
-    val courseMap: StateFlow<Map<Int, String>> = _courseMap.asStateFlow()
 
 
     private val _dailyStats = MutableStateFlow<Map<String, List<CourseStudyTime>>>(emptyMap())
@@ -40,6 +38,8 @@ class StatisticsViewModel @Inject constructor(
     private val _monthlyStats = MutableStateFlow<Map<String, List<CourseStudyTime>>>(emptyMap())
     val monthlyStats: StateFlow<Map<String, List<CourseStudyTime>>> = _monthlyStats.asStateFlow()
 
+
+    //bir ders için toplam süreyi ve dersin adını tutmak için açtık bunu
     data class CourseStudyTime(
         val courseId: Int,
         val courseName: String,
@@ -72,10 +72,10 @@ class StatisticsViewModel @Inject constructor(
 
 
         val thisWeekStats = calculateWeeklyStats(notes, currentDate)
-        _weeklyStats.value = mapOf("This Week" to thisWeekStats)
-
+        _weeklyStats.value = mapOf("Bu Hafta" to thisWeekStats)
 
         val thisMonthStats = calculateMonthlyStats(notes, currentDate)
+
         val monthName = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(currentDate.time)
         _monthlyStats.value = mapOf(monthName to thisMonthStats)
     }

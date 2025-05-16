@@ -27,11 +27,13 @@ import com.senaaksoy.derstakip.screens.EditNoteScreen
 import com.senaaksoy.derstakip.screens.StatisticsScreen
 import com.senaaksoy.derstakip.viewModel.CourseViewModel
 import com.senaaksoy.derstakip.viewModel.NoteViewModel
+import com.senaaksoy.derstakip.viewModel.StatisticsViewModel
 
 @Composable
 fun AppNavigation(
     courseViewModel: CourseViewModel = hiltViewModel(),
-    noteViewModel: NoteViewModel = hiltViewModel()
+    noteViewModel: NoteViewModel = hiltViewModel(),
+    statisticsViewModel: StatisticsViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
     val courseUistate by courseViewModel.uiState.collectAsStateWithLifecycle()
@@ -61,6 +63,10 @@ fun AppNavigation(
         NoteViewModel.TimerState.PAUSED -> "paused"
         NoteViewModel.TimerState.RESET -> "reset"
     }
+    val dailyStats by statisticsViewModel.dailyStats.collectAsState()
+    val weeklyStats by statisticsViewModel.weeklyStats.collectAsState()
+    val monthlyStats by statisticsViewModel.monthlyStats.collectAsState()
+
 
 
     Scaffold(
@@ -187,7 +193,11 @@ fun AppNavigation(
                     noteViewModel.getAllNotes()
                 }
                 StatisticsScreen(
-
+                    dailyStats = dailyStats,
+                    weeklyStats = weeklyStats,
+                    monthlyStats = monthlyStats,
+                    formatTime = { timeMillis -> statisticsViewModel.formatTime(timeMillis) },
+                    calculateTotalTime = { statsList -> statisticsViewModel.calculateTotalTime(statsList) }
                 )
             }
 
