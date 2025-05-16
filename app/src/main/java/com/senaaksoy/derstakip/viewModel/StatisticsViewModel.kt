@@ -1,6 +1,5 @@
 package com.senaaksoy.derstakip.viewModel
 
-
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -24,11 +24,8 @@ class StatisticsViewModel @Inject constructor(
     private val courseRepository: CourseRepository
 ) : ViewModel() {
 
-
     private val _allNotes = MutableStateFlow<List<Note>>(emptyList())
     private val _courseMap = MutableStateFlow<Map<Int, String>>(emptyMap())//ders id si ile ders adını eşleştiren harita
-
-
 
     private val _dailyStats = MutableStateFlow<Map<String, List<CourseStudyTime>>>(emptyMap())
     val dailyStats: StateFlow<Map<String, List<CourseStudyTime>>> = _dailyStats.asStateFlow()
@@ -38,7 +35,6 @@ class StatisticsViewModel @Inject constructor(
 
     private val _monthlyStats = MutableStateFlow<Map<String, List<CourseStudyTime>>>(emptyMap())
     val monthlyStats: StateFlow<Map<String, List<CourseStudyTime>>> = _monthlyStats.asStateFlow()
-
 
     //bir ders için toplam süreyi ve dersin adını tutmak için açtık bunu
     data class CourseStudyTime(
@@ -53,35 +49,39 @@ class StatisticsViewModel @Inject constructor(
 
     private fun loadData() {
         viewModelScope.launch {
-            courseRepository.allCourses().collect { courses ->
-                _courseMap.value = courses.associate { it.id to it.name }
 
-                noteRepository.getAllNotes().collect { notes ->
-                    _allNotes.value = notes
-                    calculateStatistics(notes)
-                }
-            }
+            val courseFlow = courseRepository.allCourses()
+            val notesFlow = noteRepository.getAllNotes()
+
+            combine(courseFlow, notesFlow) { courses, notes ->
+                val courseMap = courses.associate { it.id to it.name }
+                _courseMap.value = courseMap
+                _allNotes.value = notes
+                calculateStatistics(notes, courseMap)
+            }.collect{}
         }
     }
 
-    private fun calculateStatistics(notes: List<Note>) {
+    private fun calculateStatistics(notes: List<Note>, courseMap: Map<Int, String>) {
         val currentDate = Calendar.getInstance()
 
-
         val today = getDateString(currentDate.time)
-        _dailyStats.value = calculateDailyStats(notes, today)
+        _dailyStats.value = calculateDailyStats(notes, today, courseMap)
 
-
-        val thisWeekStats = calculateWeeklyStats(notes, currentDate)
+        val thisWeekStats = calculateWeeklyStats(notes, currentDate, courseMap)
         _weeklyStats.value = mapOf("Bu Hafta" to thisWeekStats)
 
-        val thisMonthStats = calculateMonthlyStats(notes, currentDate)
+        val thisMonthStats = calculateMonthlyStats(notes, currentDate, courseMap)
 
         val monthName = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(currentDate.time)
         _monthlyStats.value = mapOf(monthName to thisMonthStats)
     }
 
-    private fun calculateDailyStats(notes: List<Note>, dateString: String): Map<String, List<CourseStudyTime>> {
+    private fun calculateDailyStats(
+        notes: List<Note>,
+        dateString: String,
+        courseMap: Map<Int, String>
+    ): Map<String, List<CourseStudyTime>> {
         val todayNotes = notes.filter { getDateString(Date(it.timestamp)) == dateString }
 
         val courseStats = todayNotes
@@ -90,7 +90,7 @@ class StatisticsViewModel @Inject constructor(
                 val totalDuration = notesForCourse.sumOf { (it.durationMillis / 1000) * 1000 }
                 CourseStudyTime(
                     courseId = courseId,
-                    courseName = _courseMap.value[courseId] ?: "Unknown Course",
+                    courseName = courseMap[courseId] ?: "Bilinmeyen Ders", // Using Turkish for consistency
                     durationMillis = totalDuration
                 )
             }
@@ -100,7 +100,11 @@ class StatisticsViewModel @Inject constructor(
         return mapOf(dateString to courseStats)
     }
 
-    private fun calculateWeeklyStats(notes: List<Note>, currentCalendar: Calendar): List<CourseStudyTime> {
+    private fun calculateWeeklyStats(
+        notes: List<Note>,
+        currentCalendar: Calendar,
+        courseMap: Map<Int, String>
+    ): List<CourseStudyTime> {
 
         val startOfWeek = Calendar.getInstance()
         startOfWeek.time = currentCalendar.time
@@ -128,7 +132,7 @@ class StatisticsViewModel @Inject constructor(
                 val totalDuration = notesForCourse.sumOf { (it.durationMillis / 1000) * 1000 }
                 CourseStudyTime(
                     courseId = courseId,
-                    courseName = _courseMap.value[courseId] ?: "Unknown Course",
+                    courseName = courseMap[courseId] ?: "Bilinmeyen Ders", // Using Turkish for consistency
                     durationMillis = totalDuration
                 )
             }
@@ -136,7 +140,11 @@ class StatisticsViewModel @Inject constructor(
             .toList()
     }
 
-    private fun calculateMonthlyStats(notes: List<Note>, currentCalendar: Calendar): List<CourseStudyTime> {
+    private fun calculateMonthlyStats(
+        notes: List<Note>,
+        currentCalendar: Calendar,
+        courseMap: Map<Int, String>
+    ): List<CourseStudyTime> {
         val startOfMonth = Calendar.getInstance()
         startOfMonth.time = currentCalendar.time
         startOfMonth.set(Calendar.DAY_OF_MONTH, 1)
@@ -163,7 +171,7 @@ class StatisticsViewModel @Inject constructor(
                 val totalDuration = notesForCourse.sumOf { (it.durationMillis / 1000) * 1000 }
                 CourseStudyTime(
                     courseId = courseId,
-                    courseName = _courseMap.value[courseId] ?: "Unknown Course",
+                    courseName = courseMap[courseId] ?: "Bilinmeyen Ders", // Using Turkish for consistency
                     durationMillis = totalDuration
                 )
             }
