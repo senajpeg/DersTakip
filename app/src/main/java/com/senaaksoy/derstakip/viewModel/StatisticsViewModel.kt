@@ -1,6 +1,7 @@
 package com.senaaksoy.derstakip.viewModel
 
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senaaksoy.derstakip.repository.CourseRepository
@@ -170,6 +171,7 @@ class StatisticsViewModel @Inject constructor(
             .toList()
     }
 
+    @SuppressLint("DefaultLocale")
     fun formatTime(timeMillis: Long): String {
         val totalSeconds = timeMillis / 1000
         val hours = totalSeconds / 3600

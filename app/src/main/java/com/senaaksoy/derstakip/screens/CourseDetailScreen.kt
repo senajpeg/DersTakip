@@ -27,9 +27,6 @@ import com.senaaksoy.derstakip.R
 import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.navigation.Screen
 import com.senaaksoy.derstakip.roomDb.Note
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun CourseDetailScreen(
@@ -39,7 +36,8 @@ fun CourseDetailScreen(
     clearItem: () -> Unit,
     resetTimer: () -> Unit,
     formatTime: (Long) -> String,
-    formatDate: (Long) -> String
+    formatDate: (Long) -> String,
+    calculateTotalDuration: (List<Note>) -> Long
 ) {
 
     Column(
@@ -130,10 +128,7 @@ fun CourseDetailScreen(
                                     )
                                 }
                             }
-                            val totalDurationMillis = if (notes.isNotEmpty()) {
-                                notes.sumOf { (it.durationMillis / 1000) * 1000 }
-                            } else 0
-
+                            val totalDurationMillis = calculateTotalDuration(notes)
 
                             if (totalDurationMillis > 0 && notes.isNotEmpty()) {
                                 HorizontalDivider(

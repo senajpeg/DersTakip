@@ -24,6 +24,7 @@ import com.senaaksoy.derstakip.screens.AddNoteScreen
 import com.senaaksoy.derstakip.screens.CourseDetailScreen
 import com.senaaksoy.derstakip.screens.CourseListScreen
 import com.senaaksoy.derstakip.screens.EditNoteScreen
+import com.senaaksoy.derstakip.screens.SplashScreen
 import com.senaaksoy.derstakip.screens.StatisticsScreen
 import com.senaaksoy.derstakip.viewModel.CourseViewModel
 import com.senaaksoy.derstakip.viewModel.NoteViewModel
@@ -94,6 +95,9 @@ fun AppNavigation(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            composable(route = Screen.SplashScreen.route) {
+                SplashScreen(navController = navController)
+            }
             composable(route = Screen.CourseListScreen.route) {
                 CourseListScreen(
                     navController = navController,
@@ -125,7 +129,8 @@ fun AppNavigation(
                     clearItem = { noteViewModel.clearNotes() },
                     resetTimer = { noteViewModel.resetTimer() },
                     formatTime = formatTimeFunction,
-                    formatDate = formatDateFunction
+                    formatDate = formatDateFunction,
+                    calculateTotalDuration = { notes -> noteViewModel.calculateTotalDuration(notes)}
                 )
             }
             composable(

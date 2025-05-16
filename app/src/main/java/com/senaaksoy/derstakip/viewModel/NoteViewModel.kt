@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.type.Date
 import com.senaaksoy.derstakip.repository.NoteRepository
 import com.senaaksoy.derstakip.roomDb.Note
 import com.senaaksoy.derstakip.timer.StudyTimer
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -115,7 +113,7 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     }
 
 
-    fun updateNote(note: Note) {
+    private fun updateNote(note: Note) {
         viewModelScope.launch {
             noteRepo.update(note)
         }
@@ -156,7 +154,9 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         _timerState.value = TimerState.INITIAL
     }
 
-
+    fun calculateTotalDuration(notes: List<Note>): Long {
+        return notes.sumOf { (it.durationMillis / 1000) * 1000 }
+    }
     override fun onCleared() {
         super.onCleared()
         studyTimer.pause()
