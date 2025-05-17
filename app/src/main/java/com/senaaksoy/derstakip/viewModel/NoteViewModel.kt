@@ -103,7 +103,7 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         val timestamp = existingNote?.timestamp ?: System.currentTimeMillis()
 
         val newNotes=Note(id = id,
-            title = title,
+            title = title.uppercase(),
             noteContent = noteContent,
             courseId = courseId,
             durationMillis = updatedDurationMillis,
