@@ -1,6 +1,7 @@
 package com.senaaksoy.derstakip.viewModel
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senaaksoy.derstakip.repository.CourseRepository
@@ -25,7 +26,8 @@ class StatisticsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _allNotes = MutableStateFlow<List<Note>>(emptyList())
-    private val _courseMap = MutableStateFlow<Map<Int, String>>(emptyMap())//ders id si ile ders adını eşleştiren harita
+    private val _courseMap =
+        MutableStateFlow<Map<Int, String>>(emptyMap())//ders id si ile ders adını eşleştiren harita
 
     private val _dailyStats = MutableStateFlow<Map<String, List<CourseStudyTime>>>(emptyMap())
     val dailyStats: StateFlow<Map<String, List<CourseStudyTime>>> = _dailyStats.asStateFlow()
@@ -49,7 +51,6 @@ class StatisticsViewModel @Inject constructor(
 
     private fun loadData() {
         viewModelScope.launch {
-
             val courseFlow = courseRepository.allCourses()
             val notesFlow = noteRepository.getAllNotes()
 
@@ -58,21 +59,22 @@ class StatisticsViewModel @Inject constructor(
                 _courseMap.value = courseMap
                 _allNotes.value = notes
                 calculateStatistics(notes, courseMap)
-            }.collect{}
+            }.collect {}
         }
     }
 
     private fun calculateStatistics(notes: List<Note>, courseMap: Map<Int, String>) {
         val currentDate = Calendar.getInstance()
 
+
         val today = getDateString(currentDate.time)
         _dailyStats.value = calculateDailyStats(notes, today, courseMap)
+
 
         val thisWeekStats = calculateWeeklyStats(notes, currentDate, courseMap)
         _weeklyStats.value = mapOf("Bu Hafta" to thisWeekStats)
 
         val thisMonthStats = calculateMonthlyStats(notes, currentDate, courseMap)
-
         val monthName = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(currentDate.time)
         _monthlyStats.value = mapOf(monthName to thisMonthStats)
     }
@@ -90,7 +92,7 @@ class StatisticsViewModel @Inject constructor(
                 val totalDuration = notesForCourse.sumOf { (it.durationMillis / 1000) * 1000 }
                 CourseStudyTime(
                     courseId = courseId,
-                    courseName = courseMap[courseId] ?: "Bilinmeyen Ders", // Using Turkish for consistency
+                    courseName = courseMap[courseId] ?: "Bilinmeyen Ders",
                     durationMillis = totalDuration
                 )
             }
@@ -105,39 +107,48 @@ class StatisticsViewModel @Inject constructor(
         currentCalendar: Calendar,
         courseMap: Map<Int, String>
     ): List<CourseStudyTime> {
+        val cal = Calendar.getInstance()
+        cal.time = currentCalendar.time
 
-        val startOfWeek = Calendar.getInstance()
-        startOfWeek.time = currentCalendar.time
-        startOfWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-        startOfWeek.set(Calendar.HOUR_OF_DAY, 0)
-        startOfWeek.set(Calendar.MINUTE, 0)
-        startOfWeek.set(Calendar.SECOND, 0)
-        startOfWeek.set(Calendar.MILLISECOND, 0)
 
-        val endOfWeek = Calendar.getInstance()
-        endOfWeek.time = startOfWeek.time
-        endOfWeek.add(Calendar.DAY_OF_WEEK, 6)
-        endOfWeek.set(Calendar.HOUR_OF_DAY, 23)
-        endOfWeek.set(Calendar.MINUTE, 59)
-        endOfWeek.set(Calendar.SECOND, 59)
-        endOfWeek.set(Calendar.MILLISECOND, 999)
+        cal.firstDayOfWeek = Calendar.MONDAY
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
 
-        val weeklyNotes = notes.filter {
-            it.timestamp in startOfWeek.timeInMillis..endOfWeek.timeInMillis
+        val startOfWeek = cal.timeInMillis
+
+
+        cal.add(Calendar.DAY_OF_MONTH, 6)
+        cal.set(Calendar.HOUR_OF_DAY, 23)
+        cal.set(Calendar.MINUTE, 59)
+        cal.set(Calendar.SECOND, 59)
+        cal.set(Calendar.MILLISECOND, 999)
+
+        val endOfWeek = cal.timeInMillis
+
+        val weeklyNotes = notes.filter { note ->
+            note.timestamp in startOfWeek..endOfWeek
         }
 
-        return weeklyNotes
-            .groupBy { it.courseId }
-            .mapValues { (courseId, notesForCourse) ->
-                val totalDuration = notesForCourse.sumOf { (it.durationMillis / 1000) * 1000 }
-                CourseStudyTime(
-                    courseId = courseId,
-                    courseName = courseMap[courseId] ?: "Bilinmeyen Ders", // Using Turkish for consistency
-                    durationMillis = totalDuration
-                )
-            }
-            .values
-            .toList()
+        return if (weeklyNotes.isEmpty()) {
+            emptyList()
+        } else {
+            weeklyNotes
+                .groupBy { it.courseId }
+                .mapValues { (courseId, notesForCourse) ->
+                    val totalDuration = notesForCourse.sumOf { it.durationMillis }
+                    CourseStudyTime(
+                        courseId = courseId,
+                        courseName = courseMap[courseId] ?: "Bilinmeyen Ders",
+                        durationMillis = totalDuration
+                    )
+                }
+                .values
+                .toList()
+        }
     }
 
     private fun calculateMonthlyStats(
@@ -145,38 +156,47 @@ class StatisticsViewModel @Inject constructor(
         currentCalendar: Calendar,
         courseMap: Map<Int, String>
     ): List<CourseStudyTime> {
-        val startOfMonth = Calendar.getInstance()
-        startOfMonth.time = currentCalendar.time
-        startOfMonth.set(Calendar.DAY_OF_MONTH, 1)
-        startOfMonth.set(Calendar.HOUR_OF_DAY, 0)
-        startOfMonth.set(Calendar.MINUTE, 0)
-        startOfMonth.set(Calendar.SECOND, 0)
-        startOfMonth.set(Calendar.MILLISECOND, 0)
+        val cal = Calendar.getInstance()
+        cal.time = currentCalendar.time
 
-        val endOfMonth = Calendar.getInstance()
-        endOfMonth.time = startOfMonth.time
-        endOfMonth.set(Calendar.DAY_OF_MONTH, endOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH))
-        endOfMonth.set(Calendar.HOUR_OF_DAY, 23)
-        endOfMonth.set(Calendar.MINUTE, 59)
-        endOfMonth.set(Calendar.SECOND, 59)
-        endOfMonth.set(Calendar.MILLISECOND, 999)
 
-        val monthlyNotes = notes.filter {
-            it.timestamp in startOfMonth.timeInMillis..endOfMonth.timeInMillis
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+
+        val startOfMonth = cal.timeInMillis
+
+
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
+        cal.set(Calendar.HOUR_OF_DAY, 23)
+        cal.set(Calendar.MINUTE, 59)
+        cal.set(Calendar.SECOND, 59)
+        cal.set(Calendar.MILLISECOND, 999)
+
+        val endOfMonth = cal.timeInMillis
+
+        val monthlyNotes = notes.filter { note ->
+            note.timestamp in startOfMonth..endOfMonth
         }
 
-        return monthlyNotes
-            .groupBy { it.courseId }
-            .mapValues { (courseId, notesForCourse) ->
-                val totalDuration = notesForCourse.sumOf { (it.durationMillis / 1000) * 1000 }
-                CourseStudyTime(
-                    courseId = courseId,
-                    courseName = courseMap[courseId] ?: "Bilinmeyen Ders", // Using Turkish for consistency
-                    durationMillis = totalDuration
-                )
-            }
-            .values
-            .toList()
+        return if (monthlyNotes.isEmpty()) {
+            emptyList()
+        } else {
+            monthlyNotes
+                .groupBy { it.courseId }
+                .mapValues { (courseId, notesForCourse) ->
+                    val totalDuration = notesForCourse.sumOf { it.durationMillis }
+                    CourseStudyTime(
+                        courseId = courseId,
+                        courseName = courseMap[courseId] ?: "Bilinmeyen Ders",
+                        durationMillis = totalDuration
+                    )
+                }
+                .values
+                .toList()
+        }
     }
 
     @SuppressLint("DefaultLocale")

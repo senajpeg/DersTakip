@@ -73,7 +73,7 @@ fun DailyStatistics(
     formatTime: (Long) -> String,
     calculateTotalTime: (List<StatisticsViewModel.CourseStudyTime>) -> Long
 ) {
-    if (dailyStats.isEmpty()) {
+    if (dailyStats.isEmpty() || dailyStats.all { it.value.isEmpty() }) {
         EmptyStatsMessage()
         return
     }
@@ -100,7 +100,7 @@ fun WeeklyStatistics(
     formatTime: (Long) -> String,
     calculateTotalTime: (List<StatisticsViewModel.CourseStudyTime>) -> Long
 ) {
-    if (weeklyStats.isEmpty()) {
+    if (weeklyStats.isEmpty() || weeklyStats.all { it.value.isEmpty() }) {
         EmptyStatsMessage()
         return
     }
@@ -127,7 +127,7 @@ fun MonthlyStatistics(
     formatTime: (Long) -> String,
     calculateTotalTime: (List<StatisticsViewModel.CourseStudyTime>) -> Long
 ) {
-    if (monthlyStats.isEmpty()) {
+    if (monthlyStats.isEmpty() || monthlyStats.all { it.value.isEmpty() }) {
         EmptyStatsMessage()
         return
     }
