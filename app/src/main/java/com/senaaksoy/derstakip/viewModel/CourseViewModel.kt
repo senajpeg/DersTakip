@@ -49,8 +49,9 @@ class CourseViewModel @Inject constructor(private val courseRepo: CourseReposito
         addDb(newItem)
     }
     fun upDateCourse(course: Course){
+        val updatedCourse = course.copy(name = course.name.uppercase())
         viewModelScope.launch {
-            courseRepo.update(course)
+            courseRepo.update(updatedCourse)
         }
     }
 

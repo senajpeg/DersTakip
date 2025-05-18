@@ -76,7 +76,8 @@ fun CourseDetailScreen(
                         ) {
                             Text(
                                 text = title,
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color(0xFF5D4777)
                             )
 
                             notes.forEachIndexed { index, note ->
@@ -92,7 +93,8 @@ fun CourseDetailScreen(
                                             .padding(end = 8.dp)
                                     ) {
                                         Text(
-                                            text = "${index + 1}. ${note.noteContent}"
+                                            text = "${index + 1}. ${note.noteContent}",
+                                            color = Color(0xFF887A9D)
                                         )
                                         if (note.durationMillis > 0) {
                                             Text(
