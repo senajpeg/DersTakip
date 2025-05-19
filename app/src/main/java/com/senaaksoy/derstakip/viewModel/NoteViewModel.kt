@@ -27,7 +27,8 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     val studyTimer = StudyTimer()
     val timerDisplay = studyTimer.elapsedTime
 
-    private val _timerState = MutableStateFlow(TimerState.INITIAL)//geçerli durumu izlerken kullanacağımız flow değişkeni
+    private val _timerState =
+        MutableStateFlow(TimerState.INITIAL)//geçerli durumu izlerken kullanacağımız flow değişkeni
     val timerState: StateFlow<TimerState> = _timerState.asStateFlow()
 
     enum class TimerState { //bunu yapmamın sebbei zamanlayıcının geçerli durumunu izlemek
@@ -63,11 +64,12 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     var inputNoteContent by mutableStateOf("")
         private set
 
-    fun upDateTitle(title: String){
-        inputTitle=title
+    fun upDateTitle(title: String) {
+        inputTitle = title
     }
-    fun upDateNoteContent(noteContent: String){
-        inputNoteContent=noteContent
+
+    fun upDateNoteContent(noteContent: String) {
+        inputNoteContent = noteContent
     }
 
     fun saveNote(courseId: Int, title: String, noteContent: String) {
@@ -88,6 +90,7 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
             getNotesForCourse(note.courseId)
         }
     }
+
     fun deleteNotesByCourseId(courseId: Int, onComplete: () -> Unit) {
         viewModelScope.launch {
             noteRepo.deleteNotesByCourseId(courseId)
@@ -96,13 +99,14 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     }
 
 
-    fun editNotes(id: Int, courseId: Int,title: String,noteContent: String){
+    fun editNotes(id: Int, courseId: Int, title: String, noteContent: String) {
         val updatedDurationMillis = timerDisplay.value
 
         val existingNote = _uiState.value.find { it.id == id }
         val timestamp = existingNote?.timestamp ?: System.currentTimeMillis()
 
-        val newNotes=Note(id = id,
+        val newNotes = Note(
+            id = id,
             title = title.uppercase(),
             noteContent = noteContent,
             courseId = courseId,
@@ -127,7 +131,7 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
 
     fun clearNotes() {
         inputTitle = ""
-        inputNoteContent=""
+        inputNoteContent = ""
     }
 
     fun startTimer() {
@@ -149,7 +153,8 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
         studyTimer.resume()
         _timerState.value = TimerState.RUNNING
     }
-    fun setTimerValue(value: Long) { //zamanlayıcıyı belli bir değere ayarlıyo
+
+    fun setTimerValue(value: Long) {
         studyTimer.setElapsedTime(value)
         _timerState.value = TimerState.INITIAL
     }
@@ -157,10 +162,12 @@ class NoteViewModel @Inject constructor(private val noteRepo: NoteRepository) : 
     fun calculateTotalDuration(notes: List<Note>): Long {
         return notes.sumOf { (it.durationMillis / 1000) * 1000 }
     }
+
     override fun onCleared() {
         super.onCleared()
         studyTimer.pause()
     }
+
     fun formatDate(timestamp: Long): String {
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         return dateFormat.format(java.util.Date(timestamp))

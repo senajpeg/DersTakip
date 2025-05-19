@@ -28,4 +28,9 @@
     <string name="toplam_calisma_suresi">Toplam Çalışma Süresi</string>
     <string name="mevcut_istatistik_yok">Mevcut İstatistik Yok</string>
     <string name="bu_doneme_ait_calisma_verisi_yok">Bu döneme ait çalışma verisi yok</string>
+    <string name="daily_statistics_title">Günlük İstatistik - %1$s</string>
+    <string name="daily_tab">Günlük</string>
+    <string name="weekly_tab">Haftalık</string>
+    <string name="monthly_tab">Aylık</string>
+
 </resources>

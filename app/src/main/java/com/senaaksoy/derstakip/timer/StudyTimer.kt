@@ -1,5 +1,6 @@
 package com.senaaksoy.derstakip.timer
 
+import android.annotation.SuppressLint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -55,6 +56,7 @@ class StudyTimer {
         _elapsedTime.value = timeInMillis
     }
 
+    @SuppressLint("DefaultLocale")
     fun formatTime(millis: Long): String {
         val roundedMillis = (millis / 1000) * 1000
         val hours = TimeUnit.MILLISECONDS.toHours(roundedMillis)

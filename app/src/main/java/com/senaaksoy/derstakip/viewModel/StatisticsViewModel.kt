@@ -1,7 +1,6 @@
 package com.senaaksoy.derstakip.viewModel
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senaaksoy.derstakip.repository.CourseRepository
