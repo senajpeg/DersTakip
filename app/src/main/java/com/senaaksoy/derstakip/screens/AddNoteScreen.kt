@@ -42,7 +42,6 @@ fun AddNoteScreen(
     setNoteContent: (String) -> Unit,
     courseId: Int?,
     clearItem: () -> Unit,
-    currentRoute: String?,
     formattedTime: String,
     startTimer: () -> Unit,
     resetTimer: () -> Unit,
@@ -51,8 +50,6 @@ fun AddNoteScreen(
     timerState:  String
 
 ) {
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()

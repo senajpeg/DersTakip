@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.senaaksoy.derstakip.R
+import com.senaaksoy.derstakip.components.EditAlertDialog
 import com.senaaksoy.derstakip.components.EditButton
 import com.senaaksoy.derstakip.components.EditIconButton
 import com.senaaksoy.derstakip.components.EditTextField
@@ -59,6 +60,8 @@ fun EditNoteScreen(
     var noteContent by rememberSaveable { mutableStateOf(note?.noteContent ?: "") }
 
     val timerInitialized = rememberSaveable { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         if (!timerInitialized.value && note != null) {
@@ -163,14 +166,27 @@ fun EditNoteScreen(
             isIconVisible = false
         )
         EditButton(
-            onClick = {
-                note?.let { deleteNote(it) }
-                navController.popBackStack()
-            },
+            onClick = { showDeleteDialog=true },
             text = R.string.notu_sil,
             isIconVisible = false
-
         )
+        if (showDeleteDialog) {
+            EditAlertDialog(
+                title = stringResource(id = R.string.notu_sil),
+                value = "",
+                text = R.string.not_silme_onayi,
+                onValueChange = {},
+                onConfirm = {
+                    note?.let { deleteNote(it) }
+                    navController.popBackStack()
+                },
+                onDismiss = { showDeleteDialog = false },
+                confirmButtonText = stringResource(id = R.string.evet),
+                dismissButtonText = stringResource(id = R.string.hayır),
+                isTextFieldVisible = false
+            )
+        }
+
         EditButton(
             onClick = { navController.popBackStack() },
             text = R.string.iptal,
