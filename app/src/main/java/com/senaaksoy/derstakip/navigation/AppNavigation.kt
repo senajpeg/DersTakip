@@ -147,9 +147,7 @@ fun AppNavigation(
                     setNoteContent = { noteViewModel.upDateNoteContent(it) },
                     saveNote = { id, title, content ->
                         noteViewModel.saveNote(id, title, content)
-                        noteViewModel.getNotesForCourse(id)
-                    },
-                    currentRoute = currentRoute,
+                        noteViewModel.getNotesForCourse(id) },
                     clearItem = { noteViewModel.clearNotes() },
                     courseId = courseId,
                     formattedTime = formattedTime,

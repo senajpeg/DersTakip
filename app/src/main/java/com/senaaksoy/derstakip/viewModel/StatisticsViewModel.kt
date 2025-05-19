@@ -65,10 +65,8 @@ class StatisticsViewModel @Inject constructor(
     private fun calculateStatistics(notes: List<Note>, courseMap: Map<Int, String>) {
         val currentDate = Calendar.getInstance()
 
-
         val today = getDateString(currentDate.time)
         _dailyStats.value = calculateDailyStats(notes, today, courseMap)
-
 
         val thisWeekStats = calculateWeeklyStats(notes, currentDate, courseMap)
         _weeklyStats.value = mapOf("Bu Hafta" to thisWeekStats)
