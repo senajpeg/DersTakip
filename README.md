@@ -5,7 +5,11 @@ Kullanıcılar ders ekleyip her ders için çalışma notları tutabilir, kronom
 
 Teknolojiler:
 Dil ve Framework: Kotlin programlama dili ve Jetpack Compose UI 
+
 Veritabanı: Android Room Database
-MVVM (Model-View-ViewModel) mimarisi ile katmanlı yapı kuruld
+
+MVVM (Model-View-ViewModel) mimarisi ile katmanlı yapı kuruldu
+
 Hilt (Dagger-Hilt) → Moodify’de bağımlılık enjeksiyonu
+
 WorkManager -> Kullanıcıya gün içinde hatırlatıcı bildirim gönderir("Haydi çalışma zamanı!")
